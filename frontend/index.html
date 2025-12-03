@@ -1352,6 +1352,9 @@
             container.scrollTop = container.scrollHeight;
         }
 
+        let loadingTimer = null;
+        let loadingStartTime = null;
+
         function addLoadingMessage() {
             const container = document.getElementById('chatMessages');
             const id = 'loading-' + Date.now();
@@ -1364,14 +1367,28 @@
                     <div class="loading-dot"></div>
                     <div class="loading-dot"></div>
                 </div>
-                <span style="margin-left: 10px;">이미지 생성 중...</span>
+                <span style="margin-left: 10px;">이미지 생성 중... <span class="loading-time">0s</span></span>
             `;
             container.appendChild(msg);
             container.scrollTop = container.scrollHeight;
+
+            // 타이머 시작
+            loadingStartTime = Date.now();
+            const timeSpan = msg.querySelector('.loading-time');
+            loadingTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - loadingStartTime) / 1000);
+                timeSpan.textContent = `${elapsed}s`;
+            }, 1000);
+
             return id;
         }
 
         function removeLoadingMessage(id) {
+            // 타이머 정지
+            if (loadingTimer) {
+                clearInterval(loadingTimer);
+                loadingTimer = null;
+            }
             const msg = document.getElementById(id);
             if (msg) msg.remove();
         }
