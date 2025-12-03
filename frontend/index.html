@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LG전자 이미지 AI 합성 서비스</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css">
+    <style>
+        :root {
+            --lg-red: #A50034;
+            --lg-dark: #1a1a1a;
+            --lg-gray: #666666;
+            --lg-light: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .logo-text span {
+            color: var(--lg-red);
+        }
+
+        /* Main Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+            height: calc(100vh - 150px);
+        }
+
+        /* Left Panel - URL Input */
+        .left-panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .url-input-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .url-input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: var(--lg-red);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .url-input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--lg-red);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #8a002c;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .btn-add {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* Image Preview */
+        .image-preview-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .preview-image {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .preview-image:hover {
+            border-color: var(--lg-red);
+        }
+
+        .preview-image.selected {
+            border-color: var(--lg-red);
+            box-shadow: 0 0 15px rgba(165, 0, 52, 0.5);
+        }
+
+        /* Right Panel - Chat */
+        .right-panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .api-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .api-selector label {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .api-select {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .api-select:focus {
+            outline: none;
+            border-color: var(--lg-red);
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .chat-messages {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--lg-red);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-image {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 16px 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 14px;
+            resize: none;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--lg-red);
+        }
+
+        .btn-send {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--lg-red);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Result Actions */
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-download {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .left-panel {
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <svg width="60" height="24" viewBox="0 0 60 24" fill="none">
+                    <path d="M0 0h8v24H0V0zm12 0h8v18h10v6H12V0zm32 0c6.627 0 12 5.373 12 12s-5.373 12-12 12c-6.628 0-12-5.373-12-12S37.372 0 44 0zm0 6c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6z" fill="#A50034"/>
+                </svg>
+                <span class="logo-text">이미지 <span>AI 합성</span> 서비스</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Left Panel: URL Input & Image Preview -->
+            <aside class="left-panel">
+                <h2 class="panel-title">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+                    </svg>
+                    제품 URL 입력
+                </h2>
+
+                <div class="url-input-container" id="urlInputContainer">
+                    <div class="url-input-group">
+                        <input type="url" class="url-input" placeholder="LG 제품 URL을 입력하세요 (예: lg.com/tv/...)" id="url1">
+                        <button class="btn btn-secondary btn-add" onclick="addUrlInput()">+</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="margin-top: 15px; width: 100%;" onclick="extractImages()">
+                    이미지 추출
+                </button>
+
+                <div class="image-preview-section">
+                    <h3 class="panel-title" style="font-size: 16px;">
+                        추출된 이미지
+                    </h3>
+                    <div class="image-preview-grid" id="imagePreviewGrid">
+                        <!-- 추출된 이미지가 여기에 표시됩니다 -->
+                        <div style="grid-column: span 2; text-align: center; color: rgba(255,255,255,0.4); padding: 40px 0;">
+                            URL을 입력하고 이미지를 추출하세요
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right Panel: Chat Interface -->
+            <section class="right-panel">
+                <div class="chat-header">
+                    <h2 class="panel-title" style="margin-bottom: 0;">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"/>
+                        </svg>
+                        AI 이미지 합성
+                    </h2>
+                    <div class="api-selector">
+                        <label for="apiSelect">AI 모델:</label>
+                        <select id="apiSelect" class="api-select">
+                            <option value="gemini">Google Gemini (기본)</option>
+                            <option value="replicate">Replicate Flux</option>
+                            <option value="openai">OpenAI DALL-E</option>
+                            <option value="stability">Stability AI</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot">
+                            안녕하세요! LG 제품 이미지 AI 합성 서비스입니다.
+                            왼쪽에서 제품 URL을 입력하고 이미지를 추출한 후,
+                            원하시는 합성 명령을 입력해주세요.
+                            <br><br>
+                            예시: "TV 위에 사운드바를 배치해줘", "거실 배경에 TV를 설치해줘"
+                        </div>
+                    </div>
+
+                    <div class="chat-input-container">
+                        <textarea
+                            class="chat-input"
+                            id="chatInput"
+                            placeholder="합성 명령을 입력하세요... (예: TV 위에 사운드바 배치)"
+                            rows="1"
+                            onkeypress="handleKeyPress(event)"
+                        ></textarea>
+                        <button class="btn btn-primary btn-send" onclick="sendMessage()">
+                            <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            // n8n Webhook URLs - 배포 후 실제 URL로 변경하세요
+            extractionWebhook: 'http://localhost:5678/webhook/extract-images',
+            synthesisWebhook: 'http://localhost:5678/webhook/synthesize-image'
+        };
+
+        let urlCount = 1;
+        let extractedImages = [];
+        let selectedImages = [];
+        let conversationHistory = [];
+
+        // URL 입력 필드 추가
+        function addUrlInput() {
+            if (urlCount >= 5) {
+                alert('최대 5개의 URL만 입력할 수 있습니다.');
+                return;
+            }
+
+            urlCount++;
+            const container = document.getElementById('urlInputContainer');
+            const group = document.createElement('div');
+            group.className = 'url-input-group';
+            group.innerHTML = `
+                <input type="url" class="url-input" placeholder="LG 제품 URL을 입력하세요" id="url${urlCount}">
+                <button class="btn btn-secondary btn-add" onclick="this.parentElement.remove(); urlCount--;">-</button>
+            `;
+            container.appendChild(group);
+        }
+
+        // 이미지 추출
+        async function extractImages() {
+            const urls = [];
+            for (let i = 1; i <= urlCount; i++) {
+                const input = document.getElementById(`url${i}`);
+                if (input && input.value.trim()) {
+                    urls.push(input.value.trim());
+                }
+            }
+
+            if (urls.length === 0) {
+                alert('최소 1개의 URL을 입력해주세요.');
+                return;
+            }
+
+            const grid = document.getElementById('imagePreviewGrid');
+            grid.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 40px 0;"><div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><p style="margin-top: 10px; color: rgba(255,255,255,0.6);">이미지 추출 중...</p></div>';
+
+            try {
+                const response = await fetch(CONFIG.extractionWebhook, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ urls })
+                });
+
+                const data = await response.json();
+                extractedImages = data.images || [];
+
+                if (extractedImages.length === 0) {
+                    grid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: rgba(255,255,255,0.4); padding: 40px 0;">이미지를 찾을 수 없습니다. URL을 확인해주세요.</div>';
+                    return;
+                }
+
+                // 이미지 미리보기 표시
+                grid.innerHTML = extractedImages.map((img, idx) => `
+                    <img
+                        src="${img}"
+                        alt="제품 이미지 ${idx + 1}"
+                        class="preview-image"
+                        onclick="toggleImageSelection(this, '${img}')"
+                        onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22112%22><rect fill=%22%23333%22 width=%22200%22 height=%22112%22/><text fill=%22%23666%22 x=%22100%22 y=%2256%22 text-anchor=%22middle%22>이미지 로드 실패</text></svg>'"
+                    >
+                `).join('');
+
+                addBotMessage(`${extractedImages.length}개의 이미지를 추출했습니다. 합성할 이미지를 클릭하여 선택한 후, 합성 명령을 입력해주세요.`);
+
+            } catch (error) {
+                console.error('이미지 추출 오류:', error);
+                grid.innerHTML = '<div style="grid-column: span 2; text-align: center; color: #ff6b6b; padding: 40px 0;">이미지 추출 중 오류가 발생했습니다.<br>n8n 서버가 실행 중인지 확인해주세요.</div>';
+            }
+        }
+
+        // 이미지 선택 토글
+        function toggleImageSelection(element, imageUrl) {
+            element.classList.toggle('selected');
+
+            const idx = selectedImages.indexOf(imageUrl);
+            if (idx > -1) {
+                selectedImages.splice(idx, 1);
+            } else {
+                selectedImages.push(imageUrl);
+            }
+        }
+
+        // 채팅 메시지 전송
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const prompt = input.value.trim();
+
+            if (!prompt) return;
+
+            // 사용자 메시지 표시
+            addUserMessage(prompt);
+            input.value = '';
+
+            // 선택된 이미지 확인
+            if (selectedImages.length === 0 && extractedImages.length > 0) {
+                addBotMessage('합성할 이미지를 선택해주세요. 왼쪽 패널에서 이미지를 클릭하면 선택됩니다.');
+                return;
+            }
+
+            // 로딩 표시
+            const loadingId = addLoadingMessage();
+
+            try {
+                const apiProvider = document.getElementById('apiSelect').value;
+
+                const response = await fetch(CONFIG.synthesisWebhook, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        images: selectedImages.length > 0 ? selectedImages : extractedImages,
+                        apiProvider: apiProvider,
+                        sessionId: getSessionId()
+                    })
+                });
+
+                removeLoadingMessage(loadingId);
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const imageData = data.imageUrl || data.imageBase64;
+                    addBotMessageWithImage('이미지 합성이 완료되었습니다!', imageData);
+                } else {
+                    addBotMessage('이미지 합성 중 오류가 발생했습니다. 다시 시도해주세요.');
+                }
+
+            } catch (error) {
+                removeLoadingMessage(loadingId);
+                console.error('합성 오류:', error);
+                addBotMessage('서버 연결 오류가 발생했습니다. n8n 서버가 실행 중인지 확인해주세요.');
+            }
+        }
+
+        // 메시지 표시 함수들
+        function addUserMessage(text) {
+            const container = document.getElementById('chatMessages');
+            const msg = document.createElement('div');
+            msg.className = 'message user';
+            msg.textContent = text;
+            container.appendChild(msg);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addBotMessage(text) {
+            const container = document.getElementById('chatMessages');
+            const msg = document.createElement('div');
+            msg.className = 'message bot';
+            msg.textContent = text;
+            container.appendChild(msg);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addBotMessageWithImage(text, imageUrl) {
+            const container = document.getElementById('chatMessages');
+            const msg = document.createElement('div');
+            msg.className = 'message bot';
+            msg.innerHTML = `
+                ${text}
+                <img src="${imageUrl}" alt="합성된 이미지" class="message-image">
+                <div class="result-actions">
+                    <button class="btn btn-secondary btn-download" onclick="downloadImage('${imageUrl}')">
+                        다운로드
+                    </button>
+                </div>
+            `;
+            container.appendChild(msg);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addLoadingMessage() {
+            const container = document.getElementById('chatMessages');
+            const id = 'loading-' + Date.now();
+            const msg = document.createElement('div');
+            msg.className = 'message bot';
+            msg.id = id;
+            msg.innerHTML = `
+                <div class="loading">
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                </div>
+                <span style="margin-left: 10px;">이미지 생성 중...</span>
+            `;
+            container.appendChild(msg);
+            container.scrollTop = container.scrollHeight;
+            return id;
+        }
+
+        function removeLoadingMessage(id) {
+            const msg = document.getElementById(id);
+            if (msg) msg.remove();
+        }
+
+        // 이미지 다운로드
+        function downloadImage(imageUrl) {
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = `lg-synthesized-${Date.now()}.png`;
+            link.click();
+        }
+
+        // 세션 ID 생성
+        function getSessionId() {
+            let sessionId = sessionStorage.getItem('chatSessionId');
+            if (!sessionId) {
+                sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                sessionStorage.setItem('chatSessionId', sessionId);
+            }
+            return sessionId;
+        }
+
+        // 키보드 이벤트 처리
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // 텍스트 영역 자동 높이 조절
+        document.getElementById('chatInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+    </script>
+</body>
+</html>

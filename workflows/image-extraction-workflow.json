@@ -1,0 +1,144 @@
+{
+  "name": "LG 이미지 추출 워크플로우",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "extract-images",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook - URL 입력 수신",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "extract-images"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 입력된 URL 배열 처리\nconst urls = $input.first().json.body.urls || [];\nconst results = [];\n\nfor (const url of urls) {\n  // URL 유효성 검증\n  if (!url || !url.startsWith('http')) {\n    results.push({\n      url: url,\n      error: 'Invalid URL',\n      images: []\n    });\n    continue;\n  }\n  \n  // LG 도메인 확인\n  const isLGDomain = url.includes('lg.com') || url.includes('lge.com');\n  \n  results.push({\n    url: url,\n    isLGDomain: isLGDomain,\n    needsJina: true  // 동적 렌더링 필요 여부\n  });\n}\n\nreturn results.map(r => ({ json: r }));"
+      },
+      "id": "code-url-validation",
+      "name": "URL 유효성 검증",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://r.jina.ai/{{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.JINA_API_KEY }}"
+            },
+            {
+              "name": "X-Return-Format",
+              "value": "html"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "http-jina-fetch",
+      "name": "Jina AI - 페이지 스크래핑",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// HTML에서 이미지 URL 추출\nconst html = $input.first().json.data || $input.first().json.body || '';\nconst url = $input.first().json.url || $('URL 유효성 검증').first().json.url;\n\n// 이미지 URL 추출 패턴들\nconst patterns = [\n  // og:image 메타 태그\n  /<meta[^>]*property=[\"']og:image[\"'][^>]*content=[\"']([^\"']+)[\"']/gi,\n  // 일반 이미지 태그\n  /<img[^>]*src=[\"']([^\"']+)[\"'][^>]*>/gi,\n  // data-src (lazy loading)\n  /<img[^>]*data-src=[\"']([^\"']+)[\"'][^>]*>/gi,\n  // picture source\n  /<source[^>]*srcset=[\"']([^\"']+)[\"'][^>]*>/gi\n];\n\nconst images = new Set();\n\n// og:image 우선 추출\nconst ogMatch = html.match(/<meta[^>]*property=[\"']og:image[\"'][^>]*content=[\"']([^\"']+)[\"']/i);\nif (ogMatch) {\n  images.add(ogMatch[1]);\n}\n\n// 제품 이미지 패턴 (LG 스펙 페이지 특화)\nconst productImagePatterns = [\n  /[\"']([^\"']*\\.lg\\.com[^\"']*\\/images\\/[^\"']+\\.(jpg|jpeg|png|webp))[\"']/gi,\n  /[\"']([^\"']*product[^\"']*\\.(jpg|jpeg|png|webp))[\"']/gi,\n  /[\"']([^\"']*\\/p\\/[^\"']+\\.(jpg|jpeg|png|webp))[\"']/gi\n];\n\nfor (const pattern of productImagePatterns) {\n  let match;\n  while ((match = pattern.exec(html)) !== null) {\n    if (match[1] && !match[1].includes('icon') && !match[1].includes('logo')) {\n      // 상대 경로를 절대 경로로 변환\n      let imgUrl = match[1];\n      if (imgUrl.startsWith('//')) {\n        imgUrl = 'https:' + imgUrl;\n      } else if (imgUrl.startsWith('/')) {\n        const baseUrl = new URL(url);\n        imgUrl = baseUrl.origin + imgUrl;\n      }\n      images.add(imgUrl);\n    }\n  }\n}\n\n// 큰 이미지 우선 정렬 (파일명에 크기 정보가 있는 경우)\nconst imageArray = Array.from(images).slice(0, 5);  // 최대 5개\n\nreturn [{\n  json: {\n    url: url,\n    images: imageArray,\n    count: imageArray.length,\n    extractedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "code-extract-images",
+      "name": "이미지 URL 추출",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-webhook",
+      "name": "응답 반환",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Webhook - URL 입력 수신": {
+      "main": [
+        [
+          {
+            "node": "URL 유효성 검증",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "URL 유효성 검증": {
+      "main": [
+        [
+          {
+            "node": "Jina AI - 페이지 스크래핑",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jina AI - 페이지 스크래핑": {
+      "main": [
+        [
+          {
+            "node": "이미지 URL 추출",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "이미지 URL 추출": {
+      "main": [
+        [
+          {
+            "node": "응답 반환",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "LG-Image-Service"
+    }
+  ]
+}

@@ -1,0 +1,402 @@
+{
+  "name": "LG 이미지 합성 워크플로우",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "synthesize-image",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-synthesis",
+      "name": "Webhook - 합성 요청 수신",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 400],
+      "webhookId": "synthesize-image"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 입력 파라미터 추출 및 검증\nconst body = $input.first().json.body;\n\nconst prompt = body.prompt || '';  // 사용자 합성 명령\nconst images = body.images || [];   // 합성할 이미지 URL 배열\nconst apiProvider = body.apiProvider || 'gemini';  // 기본값: gemini\nconst sessionId = body.sessionId || 'default';\n\n// 프롬프트 전처리 - LG 제품 합성에 최적화\nlet enhancedPrompt = prompt;\n\n// 자연어 명령 해석 및 변환\nconst promptMappings = [\n  { pattern: /위에.*배치/i, replacement: 'place on top of' },\n  { pattern: /아래에.*배치/i, replacement: 'place below' },\n  { pattern: /옆에.*배치/i, replacement: 'place next to' },\n  { pattern: /거실.*배경/i, replacement: 'in a modern living room setting' },\n  { pattern: /벽.*마운트/i, replacement: 'mounted on wall' }\n];\n\n// 기본 스타일 추가\nconst styleAddition = 'Professional product photography, high resolution, studio lighting, clean background';\n\nreturn [{\n  json: {\n    prompt: prompt,\n    enhancedPrompt: `${enhancedPrompt}. ${styleAddition}`,\n    images: images,\n    apiProvider: apiProvider,\n    sessionId: sessionId\n  }\n}];"
+      },
+      "id": "code-prepare-request",
+      "name": "요청 전처리",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 400]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.apiProvider }}",
+                    "rightValue": "gemini",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Gemini"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.apiProvider }}",
+                    "rightValue": "replicate",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Replicate"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.apiProvider }}",
+                    "rightValue": "openai",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "OpenAI"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.apiProvider }}",
+                    "rightValue": "stability",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Stability"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "switch-api",
+      "name": "API 분기",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "={{ $env.GEMINI_API_KEY }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"{{ $json.enhancedPrompt }}. Based on these product images, create a professional composite image.\"\n        }\n        {{ $json.images.length > 0 ? ',' + $json.images.map(img => ',{\"inline_data\": {\"mime_type\": \"image/jpeg\", \"data\": \"' + img + '\"}}').join('') : '' }}\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"responseModalities\": [\"image\", \"text\"],\n    \"responseMimeType\": \"image/png\"\n  }\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "http-gemini",
+      "name": "Gemini API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [920, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.replicate.com/v1/predictions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.REPLICATE_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"version\": \"black-forest-labs/flux-1.1-pro\",\n  \"input\": {\n    \"prompt\": \"{{ $json.enhancedPrompt }}\",\n    \"aspect_ratio\": \"16:9\",\n    \"output_format\": \"png\",\n    \"output_quality\": 90\n  }\n}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "http-replicate",
+      "name": "Replicate API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [920, 350]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.OPENAI_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"dall-e-3\",\n  \"prompt\": \"{{ $json.enhancedPrompt }}\",\n  \"n\": 1,\n  \"size\": \"1792x1024\",\n  \"quality\": \"hd\"\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "http-openai",
+      "name": "OpenAI DALL-E API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [920, 500]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.STABILITY_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text_prompts\": [\n    {\n      \"text\": \"{{ $json.enhancedPrompt }}\",\n      \"weight\": 1\n    }\n  ],\n  \"cfg_scale\": 7,\n  \"width\": 1344,\n  \"height\": 768,\n  \"samples\": 1,\n  \"steps\": 30\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "http-stability",
+      "name": "Stability AI API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [920, 650]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 각 API 응답 표준화\nconst input = $input.first().json;\nconst apiProvider = $('요청 전처리').first().json.apiProvider;\n\nlet imageUrl = '';\nlet imageBase64 = '';\n\nswitch(apiProvider) {\n  case 'gemini':\n    // Gemini 응답에서 이미지 추출\n    if (input.candidates && input.candidates[0]?.content?.parts) {\n      const parts = input.candidates[0].content.parts;\n      for (const part of parts) {\n        if (part.inline_data) {\n          imageBase64 = part.inline_data.data;\n          break;\n        }\n      }\n    }\n    break;\n    \n  case 'replicate':\n    // Replicate 응답에서 이미지 URL 추출\n    if (input.output) {\n      imageUrl = Array.isArray(input.output) ? input.output[0] : input.output;\n    } else if (input.urls?.get) {\n      // 아직 처리 중인 경우 - polling 필요\n      imageUrl = input.urls.get;\n    }\n    break;\n    \n  case 'openai':\n    // OpenAI 응답에서 이미지 URL 추출\n    if (input.data && input.data[0]) {\n      imageUrl = input.data[0].url;\n    }\n    break;\n    \n  case 'stability':\n    // Stability AI 응답에서 이미지 추출\n    if (input.artifacts && input.artifacts[0]) {\n      imageBase64 = input.artifacts[0].base64;\n    }\n    break;\n}\n\nreturn [{\n  json: {\n    success: !!(imageUrl || imageBase64),\n    apiProvider: apiProvider,\n    imageUrl: imageUrl,\n    imageBase64: imageBase64 ? `data:image/png;base64,${imageBase64}` : '',\n    prompt: $('요청 전처리').first().json.prompt,\n    generatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "code-normalize-response",
+      "name": "응답 정규화",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1160, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-synthesis",
+      "name": "합성 결과 반환",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1380, 400]
+    }
+  ],
+  "connections": {
+    "Webhook - 합성 요청 수신": {
+      "main": [
+        [
+          {
+            "node": "요청 전처리",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "요청 전처리": {
+      "main": [
+        [
+          {
+            "node": "API 분기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API 분기": {
+      "main": [
+        [
+          {
+            "node": "Gemini API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replicate API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenAI DALL-E API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stability AI API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini API": {
+      "main": [
+        [
+          {
+            "node": "응답 정규화",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replicate API": {
+      "main": [
+        [
+          {
+            "node": "응답 정규화",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI DALL-E API": {
+      "main": [
+        [
+          {
+            "node": "응답 정규화",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stability AI API": {
+      "main": [
+        [
+          {
+            "node": "응답 정규화",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "LG-Image-Service"
+    }
+  ]
+}
