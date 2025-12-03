@@ -16,7 +16,8 @@
             --border-light: rgba(255,255,255,0.08);
             --text-primary: #ffffff;
             --text-secondary: rgba(255,255,255,0.6);
-            --accent: #ffffff;
+            --accent: #A50034;
+            --accent-hover: #c4003f;
         }
 
         /* Light Mode */
@@ -28,7 +29,8 @@
             --border-light: rgba(0,0,0,0.08);
             --text-primary: #000000;
             --text-secondary: rgba(0,0,0,0.6);
-            --accent: #000000;
+            --accent: #A50034;
+            --accent-hover: #c4003f;
         }
 
         * {
@@ -304,7 +306,7 @@
 
         .preview-image.selected {
             border-color: var(--accent);
-            box-shadow: 0 0 30px rgba(255,255,255,0.15);
+            box-shadow: 0 0 20px rgba(165,0,52,0.4);
             filter: grayscale(0%);
         }
 
@@ -625,7 +627,7 @@
     <div class="container">
         <header class="header">
             <div class="logo">
-                <i class="ph ph-aperture" style="font-size: 28px;"></i>
+                <i class="ph ph-aperture" style="font-size: 28px; color: var(--accent);"></i>
                 <span class="logo-text">LG <span>ImageStudio</span></span>
             </div>
             <div class="header-controls">
