@@ -90,36 +90,71 @@
             gap: 24px;
         }
 
-        .lang-select {
-            padding: 8px 32px 8px 12px;
-            border: 1px solid var(--border);
+        /* Language Selector - Dropdown Style */
+        .lang-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .lang-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border: none;
             background: transparent;
             color: var(--text-primary);
-            font-size: 11px;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ffffff' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 12px;
+            letter-spacing: 0.5px;
         }
 
-        [data-theme="light"] .lang-select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23000000' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
+        .lang-btn i {
+            font-size: 18px;
+            color: var(--text-secondary);
         }
 
-        .lang-select:focus {
-            outline: none;
-            border-color: var(--accent);
+        .lang-btn:hover {
+            color: var(--accent);
         }
 
-        .lang-select option {
-            background: var(--background);
+        .lang-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            min-width: 80px;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .lang-dropdown.open .lang-menu {
+            display: block;
+        }
+
+        .lang-menu-item {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
             color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .lang-menu-item:hover {
+            background: var(--border-light);
+        }
+
+        .lang-menu-item.active {
+            color: var(--accent);
+            background: var(--border-light);
         }
 
         /* Theme Toggle */
@@ -709,10 +744,17 @@
             </div>
             <div class="header-controls">
                 <!-- Language Selector -->
-                <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
-                    <option value="ko">한국어</option>
-                    <option value="en">ENGLISH</option>
-                </select>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button class="lang-btn" onclick="toggleLangMenu()">
+                        <i class="ph-light ph-globe"></i>
+                        <span id="currentLangCode">KO</span>
+                        <i class="ph-light ph-caret-down" style="font-size: 12px;"></i>
+                    </button>
+                    <div class="lang-menu">
+                        <button class="lang-menu-item active" data-lang="ko" onclick="selectLanguage('ko')">KO</button>
+                        <button class="lang-menu-item" data-lang="en" onclick="selectLanguage('en')">EN</button>
+                    </div>
+                </div>
 
                 <!-- Theme Toggle -->
                 <div class="theme-toggle" onclick="toggleTheme()">
@@ -963,12 +1005,35 @@
             }
         }
 
-        // 언어 변경
-        function changeLanguage(lang) {
+        // 언어 드롭다운 토글
+        function toggleLangMenu() {
+            document.getElementById('langDropdown').classList.toggle('open');
+        }
+
+        // 언어 선택
+        function selectLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('lang', lang);
+
+            // UI 업데이트
+            document.getElementById('currentLangCode').textContent = lang.toUpperCase();
+            document.querySelectorAll('.lang-menu-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.lang === lang);
+            });
+
+            // 드롭다운 닫기
+            document.getElementById('langDropdown').classList.remove('open');
+
             applyTranslations();
         }
+
+        // 외부 클릭 시 드롭다운 닫기
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('langDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
 
         // 번역 적용
         function applyTranslations() {
@@ -1046,7 +1111,10 @@
             // 언어 적용
             const savedLang = localStorage.getItem('lang') || 'ko';
             currentLang = savedLang;
-            document.getElementById('langSelect').value = savedLang;
+            document.getElementById('currentLangCode').textContent = savedLang.toUpperCase();
+            document.querySelectorAll('.lang-menu-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.lang === savedLang);
+            });
             applyTranslations();
         }
 
