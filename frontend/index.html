@@ -1338,13 +1338,14 @@
             const container = document.getElementById('chatMessages');
             const msg = document.createElement('div');
             msg.className = 'message bot';
+            const t = translations[currentLang];
             msg.innerHTML = `
                 ${text}
                 <img src="${imageUrl}" alt="합성된 이미지" class="message-image">
                 <div class="result-actions">
                     <button class="btn btn-secondary btn-download" onclick="downloadImage('${imageUrl}')">
                         <i class="ph-light ph-download" style="margin-right: 6px;"></i>
-                        DOWNLOAD
+                        ${t['btn.download']}
                     </button>
                 </div>
             `;
