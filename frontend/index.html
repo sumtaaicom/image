@@ -739,9 +739,7 @@
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
                         <div class="message bot" id="welcomeMessage">
-                            LG 이미지 AI 합성 서비스입니다. 왼쪽에서 제품 URL을 입력하고 이미지를 추출한 후, 합성 명령을 입력해주세요.
-                            <br><br>
-                            예시: "TV 아래에 사운드바 배치", "거실에 TV 설치"
+                            <!-- 언어에 따라 동적으로 설정됨 -->
                         </div>
                     </div>
 
@@ -914,8 +912,8 @@
                 welcomeMsg.innerHTML = t['msg.welcome'] + '<br><br>' + t['msg.example'];
             }
 
-            // 추출 안내 메시지
-            const extractPrompt = document.querySelector('[data-i18n="msg.extractPrompt"]');
+            // 추출 안내 메시지 (imagePreviewGrid 내부)
+            const extractPrompt = document.querySelector('#imagePreviewGrid [data-i18n="msg.extractPrompt"]');
             if (extractPrompt) {
                 extractPrompt.textContent = t['msg.extractPrompt'];
             }
