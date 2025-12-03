@@ -342,6 +342,62 @@
             font-size: 12px;
         }
 
+        /* Preset Section */
+        .preset-section {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2);
+        }
+
+        .preset-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .preset-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .preset-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .preset-btn {
+            padding: 8px 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.8);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .preset-btn.selected {
+            background: var(--lg-red);
+            border-color: var(--lg-red);
+            color: #fff;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .main-content {
@@ -420,6 +476,42 @@
                     </div>
                 </div>
 
+                <!-- 프리셋 옵션 섹션 -->
+                <div class="preset-section" id="presetSection">
+                    <div class="preset-row">
+                        <div class="preset-group">
+                            <label class="preset-label">배치 스타일</label>
+                            <div class="preset-buttons" id="layoutPresets">
+                                <button class="preset-btn" data-value="below" onclick="selectPreset(this, 'layout')">TV 아래</button>
+                                <button class="preset-btn" data-value="above" onclick="selectPreset(this, 'layout')">TV 위</button>
+                                <button class="preset-btn" data-value="side" onclick="selectPreset(this, 'layout')">나란히</button>
+                                <button class="preset-btn" data-value="stack" onclick="selectPreset(this, 'layout')">스택</button>
+                            </div>
+                        </div>
+                        <div class="preset-group">
+                            <label class="preset-label">배경</label>
+                            <div class="preset-buttons" id="backgroundPresets">
+                                <button class="preset-btn" data-value="living" onclick="selectPreset(this, 'background')">거실</button>
+                                <button class="preset-btn" data-value="bedroom" onclick="selectPreset(this, 'background')">침실</button>
+                                <button class="preset-btn" data-value="office" onclick="selectPreset(this, 'background')">오피스</button>
+                                <button class="preset-btn" data-value="studio" onclick="selectPreset(this, 'background')">스튜디오</button>
+                            </div>
+                        </div>
+                        <div class="preset-group">
+                            <label class="preset-label">촬영 앵글</label>
+                            <div class="preset-buttons" id="anglePresets">
+                                <button class="preset-btn" data-value="front" onclick="selectPreset(this, 'angle')">정면</button>
+                                <button class="preset-btn" data-value="45deg" onclick="selectPreset(this, 'angle')">45도</button>
+                                <button class="preset-btn" data-value="side" onclick="selectPreset(this, 'angle')">측면</button>
+                                <button class="preset-btn" data-value="closeup" onclick="selectPreset(this, 'angle')">클로즈업</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="generateFromPresets()">
+                        프리셋으로 이미지 생성
+                    </button>
+                </div>
+
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
                         <div class="message bot">
@@ -462,6 +554,135 @@
         let extractedImages = [];
         let selectedImages = [];
         let conversationHistory = [];
+
+        // 프리셋 선택 상태
+        let selectedPresets = {
+            layout: null,
+            background: null,
+            angle: null
+        };
+
+        // 프리셋 매핑 (한글 → 영문 프롬프트)
+        const presetMappings = {
+            layout: {
+                below: 'soundbar mounted directly below the TV',
+                above: 'soundbar placed above the TV',
+                side: 'TV and soundbar placed side by side',
+                stack: 'products stacked vertically in a display arrangement'
+            },
+            background: {
+                living: 'in a modern luxury living room with natural lighting',
+                bedroom: 'in an elegant bedroom with soft ambient lighting',
+                office: 'in a contemporary office space with minimalist design',
+                studio: 'in a professional photography studio with clean white background'
+            },
+            angle: {
+                front: 'shot from the front view',
+                '45deg': 'shot from a 45-degree angle perspective',
+                side: 'shot from the side profile view',
+                closeup: 'detailed close-up shot focusing on product details'
+            }
+        };
+
+        // 프리셋 버튼 선택
+        function selectPreset(button, category) {
+            // 같은 카테고리의 다른 버튼들 선택 해제
+            const container = button.parentElement;
+            container.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('selected'));
+
+            // 현재 버튼 선택
+            button.classList.add('selected');
+            selectedPresets[category] = button.dataset.value;
+        }
+
+        // 프리셋으로 프롬프트 생성
+        function generatePromptFromPresets() {
+            const parts = [];
+
+            // LG 제품 기본 설명
+            parts.push('Professional product photography of LG electronics');
+
+            // 배치 스타일
+            if (selectedPresets.layout) {
+                parts.push(presetMappings.layout[selectedPresets.layout]);
+            }
+
+            // 배경
+            if (selectedPresets.background) {
+                parts.push(presetMappings.background[selectedPresets.background]);
+            }
+
+            // 촬영 앵글
+            if (selectedPresets.angle) {
+                parts.push(presetMappings.angle[selectedPresets.angle]);
+            }
+
+            // 기본 품질 설정
+            parts.push('high resolution, studio lighting, 4K quality, realistic rendering');
+
+            return parts.join(', ');
+        }
+
+        // 프리셋으로 이미지 생성
+        async function generateFromPresets() {
+            // 선택된 프리셋 확인
+            if (!selectedPresets.layout && !selectedPresets.background && !selectedPresets.angle) {
+                addBotMessage('최소 하나의 프리셋 옵션을 선택해주세요.');
+                return;
+            }
+
+            // 선택된 이미지 확인
+            if (selectedImages.length === 0 && extractedImages.length === 0) {
+                addBotMessage('먼저 제품 URL에서 이미지를 추출해주세요.');
+                return;
+            }
+
+            const prompt = generatePromptFromPresets();
+
+            // 선택된 프리셋 표시
+            const presetSummary = [];
+            if (selectedPresets.layout) presetSummary.push(`배치: ${document.querySelector('#layoutPresets .selected')?.textContent}`);
+            if (selectedPresets.background) presetSummary.push(`배경: ${document.querySelector('#backgroundPresets .selected')?.textContent}`);
+            if (selectedPresets.angle) presetSummary.push(`앵글: ${document.querySelector('#anglePresets .selected')?.textContent}`);
+
+            addUserMessage(`프리셋 생성: ${presetSummary.join(', ')}`);
+
+            // 로딩 표시
+            const loadingId = addLoadingMessage();
+
+            try {
+                const apiProvider = document.getElementById('apiSelect').value;
+
+                const response = await fetch(CONFIG.synthesisWebhook, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        images: selectedImages.length > 0 ? selectedImages : extractedImages,
+                        apiProvider: apiProvider,
+                        sessionId: getSessionId()
+                    })
+                });
+
+                removeLoadingMessage(loadingId);
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const imageData = data.imageUrl || data.imageBase64;
+                    addBotMessageWithImage('프리셋 기반 이미지 합성이 완료되었습니다!', imageData);
+                } else {
+                    addBotMessage('이미지 합성 중 오류가 발생했습니다. 다시 시도해주세요.');
+                }
+
+            } catch (error) {
+                removeLoadingMessage(loadingId);
+                console.error('합성 오류:', error);
+                addBotMessage('서버 연결 오류가 발생했습니다.');
+            }
+        }
 
         // URL 입력 필드 추가
         function addUrlInput() {
