@@ -277,6 +277,23 @@
             font-weight: 300;
         }
 
+        .btn-reset {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-reset:hover {
+            color: var(--accent);
+        }
+
         /* Image Preview */
         .image-preview-section {
             margin-top: 24px;
@@ -677,10 +694,15 @@
         <main class="main-content">
             <!-- Left Panel: URL Input & Image Preview -->
             <aside class="left-panel">
-                <h2 class="panel-title">
-                    <i class="ph-light ph-link" style="font-size: 18px;"></i>
-                    <span data-i18n="panel.productUrl">제품 URL</span>
-                </h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <h2 class="panel-title" style="margin-bottom: 0;">
+                        <i class="ph-light ph-link" style="font-size: 18px;"></i>
+                        <span data-i18n="panel.productUrl">제품 URL</span>
+                    </h2>
+                    <button class="btn-reset" onclick="resetUrls()" title="초기화">
+                        <i class="ph-light ph-arrow-counter-clockwise"></i>
+                    </button>
+                </div>
                 <p class="url-hint" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;" data-i18n="hint.enterUrl">합성할 제품 URL을 입력하세요 (1~3개)</p>
 
                 <div class="url-input-container" id="urlInputContainer">
@@ -1106,6 +1128,32 @@
                 console.error('합성 오류:', error);
                 addBotMessage('서버 연결 오류가 발생했습니다.');
             }
+        }
+
+        // URL 입력 초기화
+        function resetUrls() {
+            const container = document.getElementById('urlInputContainer');
+            const t = translations[currentLang];
+
+            // 첫 번째 입력 필드만 남기고 초기화
+            container.innerHTML = `
+                <div class="url-input-group">
+                    <input type="url" class="url-input" placeholder="${t['placeholder.url']}" id="url1">
+                    <button class="btn btn-secondary btn-add" onclick="addUrlInput()"><i class="ph-light ph-plus"></i></button>
+                </div>
+            `;
+            urlCount = 1;
+
+            // 추출된 이미지 영역도 초기화
+            const grid = document.getElementById('imagePreviewGrid');
+            grid.innerHTML = `<div style="grid-column: span 2; text-align: center; color: var(--text-secondary); padding: 40px 0;" data-i18n="msg.extractPrompt">${t['msg.extractPrompt']}</div>`;
+
+            // 선택 힌트 숨기기
+            document.getElementById('imageSelectHint').style.display = 'none';
+
+            // 선택된 이미지 및 추출 이미지 배열 초기화
+            extractedImages = [];
+            selectedImages = [];
         }
 
         // URL 입력 필드 추가
