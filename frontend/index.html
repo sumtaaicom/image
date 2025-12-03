@@ -565,9 +565,58 @@
 
         /* Preset Section */
         .preset-section {
-            padding: 24px 28px;
             border-bottom: 1px solid var(--border-light);
             background: rgba(255,255,255,0.02);
+        }
+
+        .preset-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 28px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+        }
+
+        .preset-header:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .preset-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .preset-toggle-icon {
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .preset-section.collapsed .preset-toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .preset-content {
+            padding: 0 28px 24px 28px;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+            max-height: 1000px;
+            opacity: 1;
+        }
+
+        .preset-section.collapsed .preset-content {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            opacity: 0;
         }
 
         .preset-row {
@@ -901,6 +950,14 @@
 
                 <!-- 프리셋 옵션 섹션 -->
                 <div class="preset-section" id="presetSection">
+                    <div class="preset-header" onclick="togglePresets()">
+                        <span class="preset-header-title">
+                            <i class="ph-light ph-sliders-horizontal"></i>
+                            <span data-i18n="label.presets">프리셋 옵션</span>
+                        </span>
+                        <i class="ph-light ph-caret-down preset-toggle-icon" id="presetToggleIcon"></i>
+                    </div>
+                    <div class="preset-content" id="presetContent">
                     <div class="preset-row">
                         <!-- 공간 -->
                         <div class="preset-group">
@@ -967,6 +1024,7 @@
                         <i class="ph-light ph-sparkle" style="margin-right: 8px;"></i>
                         <span data-i18n="btn.generatePresets">프리셋으로 생성</span>
                     </button>
+                    </div>
                 </div>
 
                 <div class="chat-container">
@@ -1023,6 +1081,7 @@
                 'btn.generatePresets': '프리셋으로 생성',
                 'btn.download': '다운로드',
                 'label.model': '모델',
+                'label.presets': '프리셋 옵션',
                 'label.space': '공간',
                 'label.style': '스타일',
                 'label.layout': '배치',
@@ -1084,6 +1143,7 @@
                 'btn.generatePresets': 'GENERATE FROM PRESETS',
                 'btn.download': 'DOWNLOAD',
                 'label.model': 'MODEL',
+                'label.presets': 'PRESET OPTIONS',
                 'label.space': 'SPACE',
                 'label.style': 'STYLE',
                 'label.layout': 'LAYOUT',
@@ -1184,6 +1244,14 @@
             }
         });
 
+        // 프리셋 섹션 토글
+        function togglePresets() {
+            const section = document.getElementById('presetSection');
+            section.classList.toggle('collapsed');
+            // 상태 저장
+            localStorage.setItem('presetsCollapsed', section.classList.contains('collapsed'));
+        }
+
         // 번역 적용
         function applyTranslations() {
             const t = translations[currentLang];
@@ -1200,6 +1268,7 @@
 
             // 레이블
             document.querySelector('[data-i18n="label.model"]').textContent = t['label.model'];
+            document.querySelector('[data-i18n="label.presets"]').textContent = t['label.presets'];
             document.querySelector('[data-i18n="label.space"]').textContent = t['label.space'];
             document.querySelector('[data-i18n="label.style"]').textContent = t['label.style'];
             document.querySelector('[data-i18n="label.layout"]').textContent = t['label.layout'];
@@ -1291,6 +1360,12 @@
                 item.classList.toggle('active', item.dataset.lang === savedLang);
             });
             applyTranslations();
+
+            // 프리셋 섹션 상태 복원
+            const presetsCollapsed = localStorage.getItem('presetsCollapsed') === 'true';
+            if (presetsCollapsed) {
+                document.getElementById('presetSection').classList.add('collapsed');
+            }
         }
 
         // 프리셋 선택 상태
