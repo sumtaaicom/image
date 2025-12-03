@@ -571,14 +571,13 @@
         }
 
         .preset-row {
-            display: flex;
-            gap: 32px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 24px;
         }
 
         .preset-group {
-            flex: 1;
-            min-width: 140px;
+            min-width: 0;
         }
 
         .preset-label {
@@ -632,11 +631,8 @@
             }
 
             .preset-row {
+                grid-template-columns: repeat(3, 1fr);
                 gap: 20px;
-            }
-
-            .preset-group {
-                min-width: 120px;
             }
         }
 
@@ -683,12 +679,8 @@
             }
 
             .preset-row {
-                flex-direction: column;
+                grid-template-columns: 1fr;
                 gap: 12px;
-            }
-
-            .preset-group {
-                min-width: 100%;
             }
 
             .preset-label {
