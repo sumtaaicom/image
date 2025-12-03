@@ -17,9 +17,11 @@ builder = "dockerfile"
 dockerfilePath = "Dockerfile.frontend"
 
 [deploy]
+# Nginx 포트 (Railway 기본 포트)
+port = 8080
 # 헬스체크 엔드포인트
 healthcheckPath = "/health"
-healthcheckTimeout = 30
+healthcheckTimeout = 60
 # 재시작 정책
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 5
