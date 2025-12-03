@@ -628,6 +628,34 @@
                 padding: 16px 0;
             }
 
+            .header-controls {
+                gap: 12px;
+            }
+
+            .lang-select {
+                display: none;
+            }
+
+            /* 모바일: 테마 토글 아이콘만 표시 */
+            .theme-toggle-track,
+            .theme-toggle-icon:not(.mobile-visible) {
+                display: none;
+            }
+
+            .theme-toggle {
+                width: 40px;
+                height: 40px;
+                border: 1px solid var(--border);
+                border-radius: 50%;
+                justify-content: center;
+            }
+
+            .theme-toggle .mobile-theme-icon {
+                display: flex;
+                font-size: 20px;
+                color: var(--text-primary);
+            }
+
             .logo-text {
                 font-size: 12px;
                 letter-spacing: 2px;
@@ -651,6 +679,11 @@
                 padding: 14px 20px;
                 font-size: 10px;
             }
+        }
+
+        /* 모바일 테마 아이콘 (데스크탑에서 숨김) */
+        .mobile-theme-icon {
+            display: none;
         }
 
         /* Scrollbar Styling */
@@ -692,6 +725,8 @@
                         <div class="theme-toggle-thumb"></div>
                     </div>
                     <i class="ph-light ph-sun theme-toggle-icon" id="lightIcon"></i>
+                    <!-- 모바일용: 현재 테마 아이콘만 표시 -->
+                    <i class="ph-light ph-moon mobile-theme-icon" id="mobileThemeIcon"></i>
                 </div>
             </div>
         </header>
@@ -915,16 +950,19 @@
         function toggleTheme() {
             const body = document.body;
             const isDark = !body.hasAttribute('data-theme') || body.getAttribute('data-theme') === 'dark';
+            const mobileIcon = document.getElementById('mobileThemeIcon');
 
             if (isDark) {
                 body.setAttribute('data-theme', 'light');
                 document.getElementById('darkIcon').classList.remove('active');
                 document.getElementById('lightIcon').classList.add('active');
+                mobileIcon.className = 'ph-light ph-sun mobile-theme-icon';
                 localStorage.setItem('theme', 'light');
             } else {
                 body.removeAttribute('data-theme');
                 document.getElementById('darkIcon').classList.add('active');
                 document.getElementById('lightIcon').classList.remove('active');
+                mobileIcon.className = 'ph-light ph-moon mobile-theme-icon';
                 localStorage.setItem('theme', 'dark');
             }
         }
@@ -1001,10 +1039,12 @@
         function initSettings() {
             // 테마 적용
             const savedTheme = localStorage.getItem('theme');
+            const mobileIcon = document.getElementById('mobileThemeIcon');
             if (savedTheme === 'light') {
                 document.body.setAttribute('data-theme', 'light');
                 document.getElementById('darkIcon').classList.remove('active');
                 document.getElementById('lightIcon').classList.add('active');
+                mobileIcon.className = 'ph-light ph-sun mobile-theme-icon';
             }
 
             // 언어 적용
