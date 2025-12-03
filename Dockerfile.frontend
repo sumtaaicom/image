@@ -9,15 +9,6 @@ COPY frontend/ /usr/share/nginx/html/
 # Railway용 Nginx 설정 복사
 COPY nginx/nginx.railway.conf /etc/nginx/conf.d/default.conf
 
-# envsubst를 위한 스크립트 (환경변수 치환용)
-COPY nginx/docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
-# Railway는 PORT 환경변수 사용
-ENV PORT=80
-
 EXPOSE 80
 
-# 환경변수 치환 후 Nginx 시작
-ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

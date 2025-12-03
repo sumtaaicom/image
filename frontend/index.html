@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="config.js"></script>
     <style>
         :root {
             --primary: #ffffff;
@@ -818,16 +819,14 @@
 
     <script>
         // Configuration
-        // Railway 배포 시 상대경로 사용 (Nginx 프록시 경유)
-        // 로컬 개발 시 localhost:5678 사용
-        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        // 1. config.js의 N8N_URL이 설정되어 있으면 사용 (Railway 배포)
+        // 2. 없으면 localhost 사용 (로컬 개발)
+        const n8nBaseUrl = (window.APP_CONFIG && window.APP_CONFIG.N8N_URL)
+            ? window.APP_CONFIG.N8N_URL
+            : 'http://localhost:5678';
         const CONFIG = {
-            extractionWebhook: isLocalhost
-                ? 'http://localhost:5678/webhook/extract-images'
-                : '/webhook/extract-images',
-            synthesisWebhook: isLocalhost
-                ? 'http://localhost:5678/webhook/synthesize-image'
-                : '/webhook/synthesize-image'
+            extractionWebhook: n8nBaseUrl + '/webhook/extract-images',
+            synthesisWebhook: n8nBaseUrl + '/webhook/synthesize-image'
         };
 
         let urlCount = 1;
