@@ -679,12 +679,41 @@
             }
 
             .preset-section {
-                padding: 20px;
+                padding: 16px;
+                max-height: 280px;
+                overflow-y: auto;
             }
 
             .preset-row {
                 flex-direction: column;
-                gap: 16px;
+                gap: 12px;
+            }
+
+            .preset-group {
+                min-width: 100%;
+            }
+
+            .preset-label {
+                font-size: 11px;
+                margin-bottom: 8px;
+            }
+
+            .preset-buttons {
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                gap: 6px;
+                padding-bottom: 4px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .preset-buttons::-webkit-scrollbar {
+                height: 3px;
+            }
+
+            .preset-buttons::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 2px;
             }
 
             .btn {
@@ -720,8 +749,10 @@
 
             /* 모바일: 프리셋 버튼 */
             .preset-btn {
-                padding: 12px 16px;
-                font-size: 13px;
+                padding: 8px 12px;
+                font-size: 12px;
+                white-space: nowrap;
+                flex-shrink: 0;
             }
 
             /* 모바일: 채팅 입력 영역 - 하단 고정 + 전체 폭 */
@@ -881,24 +912,45 @@
                 <!-- 프리셋 옵션 섹션 -->
                 <div class="preset-section" id="presetSection">
                     <div class="preset-row">
+                        <!-- 공간 -->
+                        <div class="preset-group">
+                            <label class="preset-label" data-i18n="label.space">공간</label>
+                            <div class="preset-buttons" id="spacePresets">
+                                <button class="preset-btn" data-value="living" onclick="selectPreset(this, 'space')" data-i18n="preset.living">거실</button>
+                                <button class="preset-btn" data-value="bedroom" onclick="selectPreset(this, 'space')" data-i18n="preset.bedroom">침실</button>
+                                <button class="preset-btn" data-value="kitchen" onclick="selectPreset(this, 'space')" data-i18n="preset.kitchen">주방</button>
+                                <button class="preset-btn" data-value="laundry" onclick="selectPreset(this, 'space')" data-i18n="preset.laundry">세탁실</button>
+                                <button class="preset-btn" data-value="office" onclick="selectPreset(this, 'space')" data-i18n="preset.office">오피스</button>
+                                <button class="preset-btn" data-value="studio" onclick="selectPreset(this, 'space')" data-i18n="preset.studio">스튜디오</button>
+                                <button class="preset-btn" data-value="outdoor" onclick="selectPreset(this, 'space')" data-i18n="preset.outdoor">야외</button>
+                                <button class="preset-btn" data-value="showroom" onclick="selectPreset(this, 'space')" data-i18n="preset.showroom">쇼룸</button>
+                            </div>
+                        </div>
+                        <!-- 인테리어 스타일 -->
+                        <div class="preset-group">
+                            <label class="preset-label" data-i18n="label.style">스타일</label>
+                            <div class="preset-buttons" id="stylePresets">
+                                <button class="preset-btn" data-value="modern" onclick="selectPreset(this, 'style')" data-i18n="preset.modern">모던</button>
+                                <button class="preset-btn" data-value="minimal" onclick="selectPreset(this, 'style')" data-i18n="preset.minimal">미니멀</button>
+                                <button class="preset-btn" data-value="scandinavian" onclick="selectPreset(this, 'style')" data-i18n="preset.scandinavian">북유럽</button>
+                                <button class="preset-btn" data-value="luxurymodern" onclick="selectPreset(this, 'style')" data-i18n="preset.luxurymodern">럭셔리</button>
+                                <button class="preset-btn" data-value="natural" onclick="selectPreset(this, 'style')" data-i18n="preset.natural">내추럴</button>
+                                <button class="preset-btn" data-value="industrial" onclick="selectPreset(this, 'style')" data-i18n="preset.industrial">인더스트리얼</button>
+                            </div>
+                        </div>
+                        <!-- 배치 -->
                         <div class="preset-group">
                             <label class="preset-label" data-i18n="label.layout">배치</label>
                             <div class="preset-buttons" id="layoutPresets">
                                 <button class="preset-btn" data-value="below" onclick="selectPreset(this, 'layout')" data-i18n="preset.below">아래</button>
                                 <button class="preset-btn" data-value="above" onclick="selectPreset(this, 'layout')" data-i18n="preset.above">위</button>
                                 <button class="preset-btn" data-value="side" onclick="selectPreset(this, 'layout')" data-i18n="preset.side">나란히</button>
-                                <button class="preset-btn" data-value="stack" onclick="selectPreset(this, 'layout')" data-i18n="preset.stack">스택</button>
+                                <button class="preset-btn" data-value="center" onclick="selectPreset(this, 'layout')" data-i18n="preset.center">중앙</button>
+                                <button class="preset-btn" data-value="corner" onclick="selectPreset(this, 'layout')" data-i18n="preset.corner">코너</button>
+                                <button class="preset-btn" data-value="builtin" onclick="selectPreset(this, 'layout')" data-i18n="preset.builtin">빌트인</button>
                             </div>
                         </div>
-                        <div class="preset-group">
-                            <label class="preset-label" data-i18n="label.background">배경</label>
-                            <div class="preset-buttons" id="backgroundPresets">
-                                <button class="preset-btn" data-value="living" onclick="selectPreset(this, 'background')" data-i18n="preset.living">거실</button>
-                                <button class="preset-btn" data-value="bedroom" onclick="selectPreset(this, 'background')" data-i18n="preset.bedroom">침실</button>
-                                <button class="preset-btn" data-value="office" onclick="selectPreset(this, 'background')" data-i18n="preset.office">오피스</button>
-                                <button class="preset-btn" data-value="studio" onclick="selectPreset(this, 'background')" data-i18n="preset.studio">스튜디오</button>
-                            </div>
-                        </div>
+                        <!-- 앵글 -->
                         <div class="preset-group">
                             <label class="preset-label" data-i18n="label.angle">앵글</label>
                             <div class="preset-buttons" id="anglePresets">
@@ -906,6 +958,18 @@
                                 <button class="preset-btn" data-value="45deg" onclick="selectPreset(this, 'angle')" data-i18n="preset.45deg">45도</button>
                                 <button class="preset-btn" data-value="side" onclick="selectPreset(this, 'angle')" data-i18n="preset.sideAngle">측면</button>
                                 <button class="preset-btn" data-value="closeup" onclick="selectPreset(this, 'angle')" data-i18n="preset.closeup">클로즈업</button>
+                                <button class="preset-btn" data-value="wide" onclick="selectPreset(this, 'angle')" data-i18n="preset.wide">와이드</button>
+                            </div>
+                        </div>
+                        <!-- 조명 -->
+                        <div class="preset-group">
+                            <label class="preset-label" data-i18n="label.lighting">조명</label>
+                            <div class="preset-buttons" id="lightingPresets">
+                                <button class="preset-btn" data-value="naturallight" onclick="selectPreset(this, 'lighting')" data-i18n="preset.naturallight">자연광</button>
+                                <button class="preset-btn" data-value="warm" onclick="selectPreset(this, 'lighting')" data-i18n="preset.warm">따뜻한</button>
+                                <button class="preset-btn" data-value="cool" onclick="selectPreset(this, 'lighting')" data-i18n="preset.cool">시원한</button>
+                                <button class="preset-btn" data-value="evening" onclick="selectPreset(this, 'lighting')" data-i18n="preset.evening">저녁</button>
+                                <button class="preset-btn" data-value="studiolight" onclick="selectPreset(this, 'lighting')" data-i18n="preset.studiolight">스튜디오</button>
                             </div>
                         </div>
                     </div>
@@ -969,21 +1033,46 @@
                 'btn.generatePresets': '프리셋으로 생성',
                 'btn.download': '다운로드',
                 'label.model': '모델',
+                'label.space': '공간',
+                'label.style': '스타일',
                 'label.layout': '배치',
-                'label.background': '배경',
                 'label.angle': '앵글',
+                'label.lighting': '조명',
+                // 공간 프리셋
+                'preset.living': '거실',
+                'preset.bedroom': '침실',
+                'preset.kitchen': '주방',
+                'preset.laundry': '세탁실',
+                'preset.office': '오피스',
+                'preset.studio': '스튜디오',
+                'preset.outdoor': '야외',
+                'preset.showroom': '쇼룸',
+                // 스타일 프리셋
+                'preset.modern': '모던',
+                'preset.minimal': '미니멀',
+                'preset.scandinavian': '북유럽',
+                'preset.luxurymodern': '럭셔리',
+                'preset.natural': '내추럴',
+                'preset.industrial': '인더스트리얼',
+                // 배치 프리셋
                 'preset.below': '아래',
                 'preset.above': '위',
                 'preset.side': '나란히',
-                'preset.stack': '스택',
-                'preset.living': '거실',
-                'preset.bedroom': '침실',
-                'preset.office': '오피스',
-                'preset.studio': '스튜디오',
+                'preset.center': '중앙',
+                'preset.corner': '코너',
+                'preset.builtin': '빌트인',
+                // 앵글 프리셋
                 'preset.front': '정면',
                 'preset.45deg': '45도',
                 'preset.sideAngle': '측면',
                 'preset.closeup': '클로즈업',
+                'preset.wide': '와이드',
+                // 조명 프리셋
+                'preset.naturallight': '자연광',
+                'preset.warm': '따뜻한',
+                'preset.cool': '시원한',
+                'preset.evening': '저녁',
+                'preset.studiolight': '스튜디오',
                 'placeholder.url': 'LG 제품 URL을 입력하세요',
                 'placeholder.chat': '합성 명령을 입력하세요...',
                 'msg.welcome': 'LG 이미지 AI 합성 서비스입니다. 왼쪽에서 제품 URL을 입력하고 이미지를 추출한 후, 합성 명령을 입력해주세요.',
@@ -1005,21 +1094,46 @@
                 'btn.generatePresets': 'GENERATE FROM PRESETS',
                 'btn.download': 'DOWNLOAD',
                 'label.model': 'MODEL',
+                'label.space': 'SPACE',
+                'label.style': 'STYLE',
                 'label.layout': 'LAYOUT',
-                'label.background': 'BACKGROUND',
                 'label.angle': 'ANGLE',
+                'label.lighting': 'LIGHTING',
+                // 공간 프리셋
+                'preset.living': 'LIVING',
+                'preset.bedroom': 'BEDROOM',
+                'preset.kitchen': 'KITCHEN',
+                'preset.laundry': 'LAUNDRY',
+                'preset.office': 'OFFICE',
+                'preset.studio': 'STUDIO',
+                'preset.outdoor': 'OUTDOOR',
+                'preset.showroom': 'SHOWROOM',
+                // 스타일 프리셋
+                'preset.modern': 'MODERN',
+                'preset.minimal': 'MINIMAL',
+                'preset.scandinavian': 'NORDIC',
+                'preset.luxurymodern': 'LUXURY',
+                'preset.natural': 'NATURAL',
+                'preset.industrial': 'INDUSTRIAL',
+                // 배치 프리셋
                 'preset.below': 'BELOW',
                 'preset.above': 'ABOVE',
                 'preset.side': 'SIDE',
-                'preset.stack': 'STACK',
-                'preset.living': 'LIVING',
-                'preset.bedroom': 'BEDROOM',
-                'preset.office': 'OFFICE',
-                'preset.studio': 'STUDIO',
+                'preset.center': 'CENTER',
+                'preset.corner': 'CORNER',
+                'preset.builtin': 'BUILT-IN',
+                // 앵글 프리셋
                 'preset.front': 'FRONT',
                 'preset.45deg': '45DEG',
                 'preset.sideAngle': 'SIDE',
                 'preset.closeup': 'CLOSEUP',
+                'preset.wide': 'WIDE',
+                // 조명 프리셋
+                'preset.naturallight': 'NATURAL',
+                'preset.warm': 'WARM',
+                'preset.cool': 'COOL',
+                'preset.evening': 'EVENING',
+                'preset.studiolight': 'STUDIO',
                 'placeholder.url': 'Enter LG product URL',
                 'placeholder.chat': 'Enter synthesis command...',
                 'msg.welcome': 'Welcome to the LG Image AI Synthesis Service. Enter a product URL on the left to extract images, then describe your desired composition.',
@@ -1096,23 +1210,51 @@
 
             // 레이블
             document.querySelector('[data-i18n="label.model"]').textContent = t['label.model'];
+            document.querySelector('[data-i18n="label.space"]').textContent = t['label.space'];
+            document.querySelector('[data-i18n="label.style"]').textContent = t['label.style'];
             document.querySelector('[data-i18n="label.layout"]').textContent = t['label.layout'];
-            document.querySelector('[data-i18n="label.background"]').textContent = t['label.background'];
             document.querySelector('[data-i18n="label.angle"]').textContent = t['label.angle'];
+            document.querySelector('[data-i18n="label.lighting"]').textContent = t['label.lighting'];
 
-            // 프리셋 버튼
+            // 프리셋 버튼 - 공간
+            document.querySelector('[data-i18n="preset.living"]').textContent = t['preset.living'];
+            document.querySelector('[data-i18n="preset.bedroom"]').textContent = t['preset.bedroom'];
+            document.querySelector('[data-i18n="preset.kitchen"]').textContent = t['preset.kitchen'];
+            document.querySelector('[data-i18n="preset.laundry"]').textContent = t['preset.laundry'];
+            document.querySelector('[data-i18n="preset.office"]').textContent = t['preset.office'];
+            document.querySelector('[data-i18n="preset.studio"]').textContent = t['preset.studio'];
+            document.querySelector('[data-i18n="preset.outdoor"]').textContent = t['preset.outdoor'];
+            document.querySelector('[data-i18n="preset.showroom"]').textContent = t['preset.showroom'];
+
+            // 프리셋 버튼 - 스타일
+            document.querySelector('[data-i18n="preset.modern"]').textContent = t['preset.modern'];
+            document.querySelector('[data-i18n="preset.minimal"]').textContent = t['preset.minimal'];
+            document.querySelector('[data-i18n="preset.scandinavian"]').textContent = t['preset.scandinavian'];
+            document.querySelector('[data-i18n="preset.luxurymodern"]').textContent = t['preset.luxurymodern'];
+            document.querySelector('[data-i18n="preset.natural"]').textContent = t['preset.natural'];
+            document.querySelector('[data-i18n="preset.industrial"]').textContent = t['preset.industrial'];
+
+            // 프리셋 버튼 - 배치
             document.querySelector('[data-i18n="preset.below"]').textContent = t['preset.below'];
             document.querySelector('[data-i18n="preset.above"]').textContent = t['preset.above'];
             document.querySelector('[data-i18n="preset.side"]').textContent = t['preset.side'];
-            document.querySelector('[data-i18n="preset.stack"]').textContent = t['preset.stack'];
-            document.querySelector('[data-i18n="preset.living"]').textContent = t['preset.living'];
-            document.querySelector('[data-i18n="preset.bedroom"]').textContent = t['preset.bedroom'];
-            document.querySelector('[data-i18n="preset.office"]').textContent = t['preset.office'];
-            document.querySelector('[data-i18n="preset.studio"]').textContent = t['preset.studio'];
+            document.querySelector('[data-i18n="preset.center"]').textContent = t['preset.center'];
+            document.querySelector('[data-i18n="preset.corner"]').textContent = t['preset.corner'];
+            document.querySelector('[data-i18n="preset.builtin"]').textContent = t['preset.builtin'];
+
+            // 프리셋 버튼 - 앵글
             document.querySelector('[data-i18n="preset.front"]').textContent = t['preset.front'];
             document.querySelector('[data-i18n="preset.45deg"]').textContent = t['preset.45deg'];
             document.querySelector('[data-i18n="preset.sideAngle"]').textContent = t['preset.sideAngle'];
             document.querySelector('[data-i18n="preset.closeup"]').textContent = t['preset.closeup'];
+            document.querySelector('[data-i18n="preset.wide"]').textContent = t['preset.wide'];
+
+            // 프리셋 버튼 - 조명
+            document.querySelector('[data-i18n="preset.naturallight"]').textContent = t['preset.naturallight'];
+            document.querySelector('[data-i18n="preset.warm"]').textContent = t['preset.warm'];
+            document.querySelector('[data-i18n="preset.cool"]').textContent = t['preset.cool'];
+            document.querySelector('[data-i18n="preset.evening"]').textContent = t['preset.evening'];
+            document.querySelector('[data-i18n="preset.studiolight"]').textContent = t['preset.studiolight'];
 
             // Placeholder
             document.getElementById('url1').placeholder = t['placeholder.url'];
@@ -1163,30 +1305,54 @@
 
         // 프리셋 선택 상태
         let selectedPresets = {
+            space: null,
+            style: null,
             layout: null,
-            background: null,
-            angle: null
+            angle: null,
+            lighting: null
         };
 
         // 프리셋 매핑 (한글 → 영문 프롬프트)
         const presetMappings = {
+            space: {
+                living: 'in a modern luxury living room',
+                bedroom: 'in an elegant bedroom',
+                kitchen: 'in a contemporary kitchen with modern appliances',
+                laundry: 'in a clean laundry room',
+                office: 'in a contemporary office space',
+                studio: 'in a professional photography studio with clean white background',
+                outdoor: 'on a balcony or outdoor terrace',
+                showroom: 'in a premium product showroom display'
+            },
+            style: {
+                modern: 'modern minimalist interior design',
+                minimal: 'clean and simple minimal style',
+                scandinavian: 'warm Scandinavian Nordic style with light wood tones',
+                luxurymodern: 'luxury modern high-end interior',
+                natural: 'natural and cozy atmosphere with plants',
+                industrial: 'industrial loft style with exposed elements'
+            },
             layout: {
                 below: 'soundbar mounted directly below the TV',
-                above: 'soundbar placed above the TV',
-                side: 'TV and soundbar placed side by side',
-                stack: 'products stacked vertically in a display arrangement'
-            },
-            background: {
-                living: 'in a modern luxury living room with natural lighting',
-                bedroom: 'in an elegant bedroom with soft ambient lighting',
-                office: 'in a contemporary office space with minimalist design',
-                studio: 'in a professional photography studio with clean white background'
+                above: 'product placed above',
+                side: 'products placed side by side',
+                center: 'product positioned in the center of the space',
+                corner: 'product placed in the corner of the room',
+                builtin: 'product built into the cabinetry'
             },
             angle: {
                 front: 'shot from the front view',
                 '45deg': 'shot from a 45-degree angle perspective',
                 side: 'shot from the side profile view',
-                closeup: 'detailed close-up shot focusing on product details'
+                closeup: 'detailed close-up shot focusing on product details',
+                wide: 'wide angle shot showing the entire room context'
+            },
+            lighting: {
+                naturallight: 'with natural daylight from windows',
+                warm: 'with warm ambient lighting',
+                cool: 'with cool toned lighting',
+                evening: 'with evening atmosphere and soft lights',
+                studiolight: 'with professional studio lighting setup'
             }
         };
 
@@ -1208,14 +1374,19 @@
             // LG 제품 기본 설명
             parts.push('Professional product photography of LG electronics');
 
+            // 공간
+            if (selectedPresets.space) {
+                parts.push(presetMappings.space[selectedPresets.space]);
+            }
+
+            // 인테리어 스타일
+            if (selectedPresets.style) {
+                parts.push(presetMappings.style[selectedPresets.style]);
+            }
+
             // 배치 스타일
             if (selectedPresets.layout) {
                 parts.push(presetMappings.layout[selectedPresets.layout]);
-            }
-
-            // 배경
-            if (selectedPresets.background) {
-                parts.push(presetMappings.background[selectedPresets.background]);
             }
 
             // 촬영 앵글
@@ -1223,8 +1394,13 @@
                 parts.push(presetMappings.angle[selectedPresets.angle]);
             }
 
+            // 조명
+            if (selectedPresets.lighting) {
+                parts.push(presetMappings.lighting[selectedPresets.lighting]);
+            }
+
             // 기본 품질 설정
-            parts.push('high resolution, studio lighting, 4K quality, realistic rendering');
+            parts.push('high resolution, 4K quality, realistic rendering');
 
             return parts.join(', ');
         }
@@ -1232,7 +1408,7 @@
         // 프리셋으로 이미지 생성
         async function generateFromPresets() {
             // 선택된 프리셋 확인
-            if (!selectedPresets.layout && !selectedPresets.background && !selectedPresets.angle) {
+            if (!selectedPresets.space && !selectedPresets.style && !selectedPresets.layout && !selectedPresets.angle && !selectedPresets.lighting) {
                 addBotMessage('최소 하나의 프리셋 옵션을 선택해주세요.');
                 return;
             }
@@ -1247,9 +1423,11 @@
 
             // 선택된 프리셋 표시
             const presetSummary = [];
+            if (selectedPresets.space) presetSummary.push(`공간: ${document.querySelector('#spacePresets .selected')?.textContent}`);
+            if (selectedPresets.style) presetSummary.push(`스타일: ${document.querySelector('#stylePresets .selected')?.textContent}`);
             if (selectedPresets.layout) presetSummary.push(`배치: ${document.querySelector('#layoutPresets .selected')?.textContent}`);
-            if (selectedPresets.background) presetSummary.push(`배경: ${document.querySelector('#backgroundPresets .selected')?.textContent}`);
             if (selectedPresets.angle) presetSummary.push(`앵글: ${document.querySelector('#anglePresets .selected')?.textContent}`);
+            if (selectedPresets.lighting) presetSummary.push(`조명: ${document.querySelector('#lightingPresets .selected')?.textContent}`);
 
             addUserMessage(`프리셋 생성: ${presetSummary.join(', ')}`);
 
