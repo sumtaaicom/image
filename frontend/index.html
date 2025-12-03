@@ -18,6 +18,18 @@
             --accent: #ffffff;
         }
 
+        /* Light Mode */
+        [data-theme="light"] {
+            --primary: #000000;
+            --background: #ffffff;
+            --surface: #f5f5f5;
+            --border: rgba(0,0,0,0.15);
+            --border-light: rgba(0,0,0,0.08);
+            --text-primary: #000000;
+            --text-secondary: rgba(0,0,0,0.6);
+            --accent: #000000;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -65,6 +77,90 @@
 
         .logo-text span {
             color: var(--text-secondary);
+        }
+
+        /* Header Controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .lang-select {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 11px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ffffff' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 12px;
+        }
+
+        [data-theme="light"] .lang-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23000000' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
+        }
+
+        .lang-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .lang-select option {
+            background: var(--background);
+            color: var(--text-primary);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .theme-toggle-track {
+            width: 44px;
+            height: 24px;
+            border: 1px solid var(--border);
+            background: transparent;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-track:hover {
+            border-color: var(--text-secondary);
+        }
+
+        .theme-toggle-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--text-primary);
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .theme-toggle-thumb {
+            left: 22px;
+        }
+
+        .theme-toggle-icon {
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .theme-toggle-icon.active {
+            color: var(--text-primary);
         }
 
         /* Main Layout */
@@ -264,8 +360,12 @@
             border-color: var(--accent);
         }
 
+        [data-theme="light"] .api-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23000000' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
+        }
+
         .api-select option {
-            background: #111111;
+            background: var(--background);
             color: var(--text-primary);
             padding: 12px;
         }
@@ -525,9 +625,25 @@
         <header class="header">
             <div class="logo">
                 <svg width="60" height="24" viewBox="0 0 60 24" fill="none">
-                    <path d="M0 0h8v24H0V0zm12 0h8v18h10v6H12V0zm32 0c6.627 0 12 5.373 12 12s-5.373 12-12 12c-6.628 0-12-5.373-12-12S37.372 0 44 0zm0 6c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6z" fill="#ffffff"/>
+                    <path d="M0 0h8v24H0V0zm12 0h8v18h10v6H12V0zm32 0c6.627 0 12 5.373 12 12s-5.373 12-12 12c-6.628 0-12-5.373-12-12S37.372 0 44 0zm0 6c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6z" fill="currentColor"/>
                 </svg>
-                <span class="logo-text">IMAGE <span>AI SYNTHESIS</span></span>
+                <span class="logo-text" data-i18n="header.title">IMAGE <span data-i18n="header.subtitle">AI SYNTHESIS</span></span>
+            </div>
+            <div class="header-controls">
+                <!-- Language Selector -->
+                <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+                    <option value="ko">한국어</option>
+                    <option value="en">ENGLISH</option>
+                </select>
+
+                <!-- Theme Toggle -->
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <i class="ph-light ph-moon theme-toggle-icon active" id="darkIcon"></i>
+                    <div class="theme-toggle-track">
+                        <div class="theme-toggle-thumb"></div>
+                    </div>
+                    <i class="ph-light ph-sun theme-toggle-icon" id="lightIcon"></i>
+                </div>
             </div>
         </header>
 
@@ -536,29 +652,29 @@
             <aside class="left-panel">
                 <h2 class="panel-title">
                     <i class="ph-light ph-link" style="font-size: 18px;"></i>
-                    PRODUCT URL
+                    <span data-i18n="panel.productUrl">제품 URL</span>
                 </h2>
 
                 <div class="url-input-container" id="urlInputContainer">
                     <div class="url-input-group">
-                        <input type="url" class="url-input" placeholder="LG 제품 URL을 입력하세요 (예: lg.com/tv/...)" id="url1">
+                        <input type="url" class="url-input" placeholder="LG 제품 URL을 입력하세요" id="url1">
                         <button class="btn btn-secondary btn-add" onclick="addUrlInput()"><i class="ph-light ph-plus"></i></button>
                     </div>
                 </div>
 
                 <button class="btn btn-primary" style="margin-top: 20px; width: 100%;" onclick="extractImages()">
                     <i class="ph-light ph-download-simple" style="margin-right: 8px;"></i>
-                    EXTRACT IMAGES
+                    <span data-i18n="btn.extractImages">이미지 추출</span>
                 </button>
 
                 <div class="image-preview-section">
                     <h3 class="panel-title" style="font-size: 10px;">
                         <i class="ph-light ph-images" style="font-size: 16px;"></i>
-                        EXTRACTED IMAGES
+                        <span data-i18n="panel.extractedImages">추출된 이미지</span>
                     </h3>
                     <div class="image-preview-grid" id="imagePreviewGrid">
                         <!-- 추출된 이미지가 여기에 표시됩니다 -->
-                        <div style="grid-column: span 2; text-align: center; color: rgba(255,255,255,0.4); padding: 40px 0;">
+                        <div style="grid-column: span 2; text-align: center; color: var(--text-secondary); padding: 40px 0;" data-i18n="msg.extractPrompt">
                             URL을 입력하고 이미지를 추출하세요
                         </div>
                     </div>
@@ -570,10 +686,10 @@
                 <div class="chat-header">
                     <h2 class="panel-title" style="margin-bottom: 0;">
                         <i class="ph-light ph-magic-wand" style="font-size: 18px;"></i>
-                        AI SYNTHESIS
+                        <span data-i18n="panel.aiSynthesis">AI 합성</span>
                     </h2>
                     <div class="api-selector">
-                        <label for="apiSelect">MODEL</label>
+                        <label for="apiSelect" data-i18n="label.model">모델</label>
                         <select id="apiSelect" class="api-select">
                             <option value="gemini">GEMINI</option>
                             <option value="replicate">FLUX</option>
@@ -587,47 +703,45 @@
                 <div class="preset-section" id="presetSection">
                     <div class="preset-row">
                         <div class="preset-group">
-                            <label class="preset-label">LAYOUT</label>
+                            <label class="preset-label" data-i18n="label.layout">배치</label>
                             <div class="preset-buttons" id="layoutPresets">
-                                <button class="preset-btn" data-value="below" onclick="selectPreset(this, 'layout')">BELOW</button>
-                                <button class="preset-btn" data-value="above" onclick="selectPreset(this, 'layout')">ABOVE</button>
-                                <button class="preset-btn" data-value="side" onclick="selectPreset(this, 'layout')">SIDE</button>
-                                <button class="preset-btn" data-value="stack" onclick="selectPreset(this, 'layout')">STACK</button>
+                                <button class="preset-btn" data-value="below" onclick="selectPreset(this, 'layout')" data-i18n="preset.below">아래</button>
+                                <button class="preset-btn" data-value="above" onclick="selectPreset(this, 'layout')" data-i18n="preset.above">위</button>
+                                <button class="preset-btn" data-value="side" onclick="selectPreset(this, 'layout')" data-i18n="preset.side">나란히</button>
+                                <button class="preset-btn" data-value="stack" onclick="selectPreset(this, 'layout')" data-i18n="preset.stack">스택</button>
                             </div>
                         </div>
                         <div class="preset-group">
-                            <label class="preset-label">BACKGROUND</label>
+                            <label class="preset-label" data-i18n="label.background">배경</label>
                             <div class="preset-buttons" id="backgroundPresets">
-                                <button class="preset-btn" data-value="living" onclick="selectPreset(this, 'background')">LIVING</button>
-                                <button class="preset-btn" data-value="bedroom" onclick="selectPreset(this, 'background')">BEDROOM</button>
-                                <button class="preset-btn" data-value="office" onclick="selectPreset(this, 'background')">OFFICE</button>
-                                <button class="preset-btn" data-value="studio" onclick="selectPreset(this, 'background')">STUDIO</button>
+                                <button class="preset-btn" data-value="living" onclick="selectPreset(this, 'background')" data-i18n="preset.living">거실</button>
+                                <button class="preset-btn" data-value="bedroom" onclick="selectPreset(this, 'background')" data-i18n="preset.bedroom">침실</button>
+                                <button class="preset-btn" data-value="office" onclick="selectPreset(this, 'background')" data-i18n="preset.office">오피스</button>
+                                <button class="preset-btn" data-value="studio" onclick="selectPreset(this, 'background')" data-i18n="preset.studio">스튜디오</button>
                             </div>
                         </div>
                         <div class="preset-group">
-                            <label class="preset-label">ANGLE</label>
+                            <label class="preset-label" data-i18n="label.angle">앵글</label>
                             <div class="preset-buttons" id="anglePresets">
-                                <button class="preset-btn" data-value="front" onclick="selectPreset(this, 'angle')">FRONT</button>
-                                <button class="preset-btn" data-value="45deg" onclick="selectPreset(this, 'angle')">45DEG</button>
-                                <button class="preset-btn" data-value="side" onclick="selectPreset(this, 'angle')">SIDE</button>
-                                <button class="preset-btn" data-value="closeup" onclick="selectPreset(this, 'angle')">CLOSEUP</button>
+                                <button class="preset-btn" data-value="front" onclick="selectPreset(this, 'angle')" data-i18n="preset.front">정면</button>
+                                <button class="preset-btn" data-value="45deg" onclick="selectPreset(this, 'angle')" data-i18n="preset.45deg">45도</button>
+                                <button class="preset-btn" data-value="side" onclick="selectPreset(this, 'angle')" data-i18n="preset.sideAngle">측면</button>
+                                <button class="preset-btn" data-value="closeup" onclick="selectPreset(this, 'angle')" data-i18n="preset.closeup">클로즈업</button>
                             </div>
                         </div>
                     </div>
                     <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="generateFromPresets()">
                         <i class="ph-light ph-sparkle" style="margin-right: 8px;"></i>
-                        GENERATE FROM PRESETS
+                        <span data-i18n="btn.generatePresets">프리셋으로 생성</span>
                     </button>
                 </div>
 
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
-                        <div class="message bot">
-                            Welcome to the LG Image AI Synthesis Service.
-                            Enter a product URL on the left to extract images,
-                            then describe your desired composition.
+                        <div class="message bot" id="welcomeMessage">
+                            LG 이미지 AI 합성 서비스입니다. 왼쪽에서 제품 URL을 입력하고 이미지를 추출한 후, 합성 명령을 입력해주세요.
                             <br><br>
-                            Example: "Place soundbar below the TV", "Set up TV in living room"
+                            예시: "TV 아래에 사운드바 배치", "거실에 TV 설치"
                         </div>
                     </div>
 
@@ -635,7 +749,7 @@
                         <textarea
                             class="chat-input"
                             id="chatInput"
-                            placeholder="Enter synthesis command..."
+                            placeholder="합성 명령을 입력하세요..."
                             rows="1"
                             onkeypress="handleKeyPress(event)"
                         ></textarea>
@@ -660,6 +774,169 @@
         let extractedImages = [];
         let selectedImages = [];
         let conversationHistory = [];
+        let currentLang = 'ko';
+
+        // 다국어 번역
+        const translations = {
+            ko: {
+                'header.title': '이미지',
+                'header.subtitle': 'AI 합성',
+                'panel.productUrl': '제품 URL',
+                'panel.extractedImages': '추출된 이미지',
+                'panel.aiSynthesis': 'AI 합성',
+                'btn.extractImages': '이미지 추출',
+                'btn.generatePresets': '프리셋으로 생성',
+                'btn.download': '다운로드',
+                'label.model': '모델',
+                'label.layout': '배치',
+                'label.background': '배경',
+                'label.angle': '앵글',
+                'preset.below': '아래',
+                'preset.above': '위',
+                'preset.side': '나란히',
+                'preset.stack': '스택',
+                'preset.living': '거실',
+                'preset.bedroom': '침실',
+                'preset.office': '오피스',
+                'preset.studio': '스튜디오',
+                'preset.front': '정면',
+                'preset.45deg': '45도',
+                'preset.sideAngle': '측면',
+                'preset.closeup': '클로즈업',
+                'placeholder.url': 'LG 제품 URL을 입력하세요',
+                'placeholder.chat': '합성 명령을 입력하세요...',
+                'msg.welcome': 'LG 이미지 AI 합성 서비스입니다. 왼쪽에서 제품 URL을 입력하고 이미지를 추출한 후, 합성 명령을 입력해주세요.',
+                'msg.example': '예시: "TV 아래에 사운드바 배치", "거실에 TV 설치"',
+                'msg.extractPrompt': 'URL을 입력하고 이미지를 추출하세요',
+                'msg.extracting': '이미지 추출 중...',
+                'msg.generating': '이미지 생성 중...'
+            },
+            en: {
+                'header.title': 'IMAGE',
+                'header.subtitle': 'AI SYNTHESIS',
+                'panel.productUrl': 'PRODUCT URL',
+                'panel.extractedImages': 'EXTRACTED IMAGES',
+                'panel.aiSynthesis': 'AI SYNTHESIS',
+                'btn.extractImages': 'EXTRACT IMAGES',
+                'btn.generatePresets': 'GENERATE FROM PRESETS',
+                'btn.download': 'DOWNLOAD',
+                'label.model': 'MODEL',
+                'label.layout': 'LAYOUT',
+                'label.background': 'BACKGROUND',
+                'label.angle': 'ANGLE',
+                'preset.below': 'BELOW',
+                'preset.above': 'ABOVE',
+                'preset.side': 'SIDE',
+                'preset.stack': 'STACK',
+                'preset.living': 'LIVING',
+                'preset.bedroom': 'BEDROOM',
+                'preset.office': 'OFFICE',
+                'preset.studio': 'STUDIO',
+                'preset.front': 'FRONT',
+                'preset.45deg': '45DEG',
+                'preset.sideAngle': 'SIDE',
+                'preset.closeup': 'CLOSEUP',
+                'placeholder.url': 'Enter LG product URL',
+                'placeholder.chat': 'Enter synthesis command...',
+                'msg.welcome': 'Welcome to the LG Image AI Synthesis Service. Enter a product URL on the left to extract images, then describe your desired composition.',
+                'msg.example': 'Example: "Place soundbar below the TV", "Set up TV in living room"',
+                'msg.extractPrompt': 'Enter URL and extract images',
+                'msg.extracting': 'Extracting images...',
+                'msg.generating': 'Generating image...'
+            }
+        };
+
+        // 테마 토글
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = !body.hasAttribute('data-theme') || body.getAttribute('data-theme') === 'dark';
+
+            if (isDark) {
+                body.setAttribute('data-theme', 'light');
+                document.getElementById('darkIcon').classList.remove('active');
+                document.getElementById('lightIcon').classList.add('active');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.removeAttribute('data-theme');
+                document.getElementById('darkIcon').classList.add('active');
+                document.getElementById('lightIcon').classList.remove('active');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // 언어 변경
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            applyTranslations();
+        }
+
+        // 번역 적용
+        function applyTranslations() {
+            const t = translations[currentLang];
+
+            // 패널 타이틀
+            document.querySelector('[data-i18n="panel.productUrl"]').textContent = t['panel.productUrl'];
+            document.querySelector('[data-i18n="panel.extractedImages"]').textContent = t['panel.extractedImages'];
+            document.querySelector('[data-i18n="panel.aiSynthesis"]').textContent = t['panel.aiSynthesis'];
+
+            // 버튼
+            document.querySelector('[data-i18n="btn.extractImages"]').textContent = t['btn.extractImages'];
+            document.querySelector('[data-i18n="btn.generatePresets"]').textContent = t['btn.generatePresets'];
+
+            // 레이블
+            document.querySelector('[data-i18n="label.model"]').textContent = t['label.model'];
+            document.querySelector('[data-i18n="label.layout"]').textContent = t['label.layout'];
+            document.querySelector('[data-i18n="label.background"]').textContent = t['label.background'];
+            document.querySelector('[data-i18n="label.angle"]').textContent = t['label.angle'];
+
+            // 프리셋 버튼
+            document.querySelector('[data-i18n="preset.below"]').textContent = t['preset.below'];
+            document.querySelector('[data-i18n="preset.above"]').textContent = t['preset.above'];
+            document.querySelector('[data-i18n="preset.side"]').textContent = t['preset.side'];
+            document.querySelector('[data-i18n="preset.stack"]').textContent = t['preset.stack'];
+            document.querySelector('[data-i18n="preset.living"]').textContent = t['preset.living'];
+            document.querySelector('[data-i18n="preset.bedroom"]').textContent = t['preset.bedroom'];
+            document.querySelector('[data-i18n="preset.office"]').textContent = t['preset.office'];
+            document.querySelector('[data-i18n="preset.studio"]').textContent = t['preset.studio'];
+            document.querySelector('[data-i18n="preset.front"]').textContent = t['preset.front'];
+            document.querySelector('[data-i18n="preset.45deg"]').textContent = t['preset.45deg'];
+            document.querySelector('[data-i18n="preset.sideAngle"]').textContent = t['preset.sideAngle'];
+            document.querySelector('[data-i18n="preset.closeup"]').textContent = t['preset.closeup'];
+
+            // Placeholder
+            document.getElementById('url1').placeholder = t['placeholder.url'];
+            document.getElementById('chatInput').placeholder = t['placeholder.chat'];
+
+            // 웰컴 메시지
+            const welcomeMsg = document.getElementById('welcomeMessage');
+            if (welcomeMsg) {
+                welcomeMsg.innerHTML = t['msg.welcome'] + '<br><br>' + t['msg.example'];
+            }
+
+            // 추출 안내 메시지
+            const extractPrompt = document.querySelector('[data-i18n="msg.extractPrompt"]');
+            if (extractPrompt) {
+                extractPrompt.textContent = t['msg.extractPrompt'];
+            }
+        }
+
+        // 초기화 - 저장된 테마 및 언어 적용
+        function initSettings() {
+            // 테마 적용
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.setAttribute('data-theme', 'light');
+                document.getElementById('darkIcon').classList.remove('active');
+                document.getElementById('lightIcon').classList.add('active');
+            }
+
+            // 언어 적용
+            const savedLang = localStorage.getItem('lang') || 'ko';
+            currentLang = savedLang;
+            document.getElementById('langSelect').value = savedLang;
+            applyTranslations();
+        }
 
         // 프리셋 선택 상태
         let selectedPresets = {
@@ -1026,6 +1303,9 @@
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
+
+        // 페이지 로드 시 설정 초기화
+        document.addEventListener('DOMContentLoaded', initSettings);
     </script>
 </body>
 </html>
