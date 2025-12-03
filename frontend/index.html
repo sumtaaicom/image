@@ -291,14 +291,19 @@
             margin-top: 16px;
         }
 
+        .preview-image-wrapper {
+            position: relative;
+            cursor: pointer;
+        }
+
         .preview-image {
             width: 100%;
             aspect-ratio: 16/9;
             object-fit: cover;
-            border: 1px solid var(--border);
-            cursor: pointer;
+            border: 2px solid var(--border);
             transition: all 0.2s ease;
             filter: grayscale(20%);
+            display: block;
         }
 
         .preview-image:hover {
@@ -306,10 +311,29 @@
             filter: grayscale(0%);
         }
 
-        .preview-image.selected {
+        .preview-image-wrapper.selected .preview-image {
             border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(165,0,52,0.4);
+            border-width: 3px;
             filter: grayscale(0%);
+        }
+
+        .preview-image-wrapper .check-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .preview-image-wrapper.selected .check-badge {
+            display: flex;
         }
 
         /* Right Panel - Chat */
@@ -675,6 +699,7 @@
                         <i class="ph-light ph-images" style="font-size: 18px;"></i>
                         <span data-i18n="panel.extractedImages">추출된 이미지</span>
                     </h3>
+                    <p class="image-select-hint" id="imageSelectHint" style="display: none; font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;" data-i18n="hint.selectImages">합성할 이미지를 클릭하여 선택하세요</p>
                     <div class="image-preview-grid" id="imagePreviewGrid">
                         <!-- 추출된 이미지가 여기에 표시됩니다 -->
                         <div style="grid-column: span 2; text-align: center; color: var(--text-secondary); padding: 40px 0;" data-i18n="msg.extractPrompt">
@@ -810,7 +835,8 @@
                 'msg.example': '예시: "TV 아래에 사운드바 배치", "거실에 TV 설치"',
                 'msg.extractPrompt': 'URL을 입력하고 이미지를 추출하세요',
                 'msg.extracting': '이미지 추출 중...',
-                'msg.generating': '이미지 생성 중...'
+                'msg.generating': '이미지 생성 중...',
+                'hint.selectImages': '합성할 이미지를 클릭하여 선택하세요'
             },
             en: {
                 'header.title': 'IMAGE',
@@ -843,7 +869,8 @@
                 'msg.example': 'Example: "Place soundbar below the TV", "Set up TV in living room"',
                 'msg.extractPrompt': 'Enter URL and extract images',
                 'msg.extracting': 'Extracting images...',
-                'msg.generating': 'Generating image...'
+                'msg.generating': 'Generating image...',
+                'hint.selectImages': 'Click images to select for synthesis'
             }
         };
 
@@ -1129,14 +1156,21 @@
 
                 // 이미지 미리보기 표시
                 grid.innerHTML = extractedImages.map((img, idx) => `
-                    <img
-                        src="${img}"
-                        alt="제품 이미지 ${idx + 1}"
-                        class="preview-image"
-                        onclick="toggleImageSelection(this, '${img}')"
-                        onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22112%22><rect fill=%22%23333%22 width=%22200%22 height=%22112%22/><text fill=%22%23666%22 x=%22100%22 y=%2256%22 text-anchor=%22middle%22>이미지 로드 실패</text></svg>'"
-                    >
+                    <div class="preview-image-wrapper" onclick="toggleImageSelection(this, '${img}')">
+                        <img
+                            src="${img}"
+                            alt="제품 이미지 ${idx + 1}"
+                            class="preview-image"
+                            onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22112%22><rect fill=%22%23333%22 width=%22200%22 height=%22112%22/><text fill=%22%23666%22 x=%22100%22 y=%2256%22 text-anchor=%22middle%22>이미지 로드 실패</text></svg>'"
+                        >
+                        <div class="check-badge"><i class="ph-bold ph-check"></i></div>
+                    </div>
                 `).join('');
+
+                // 선택 안내 힌트 표시
+                const hint = document.getElementById('imageSelectHint');
+                hint.style.display = 'block';
+                hint.textContent = translations[currentLang]['hint.selectImages'];
 
                 addBotMessage(`${extractedImages.length}개의 이미지를 추출했습니다. 합성할 이미지를 클릭하여 선택한 후, 합성 명령을 입력해주세요.`);
 
