@@ -1,5 +1,14 @@
-// 배포 환경 설정
-window.APP_CONFIG = {
-    // n8n 서비스 URL (Railway)
-    N8N_URL: 'https://n8nimagestudio.up.railway.app'
-};
+// 환경별 자동 설정
+(function() {
+    const hostname = window.location.hostname;
+    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '' || window.location.protocol === 'file:';
+
+    window.APP_CONFIG = {
+        N8N_URL: isLocal
+            ? 'http://localhost:5678'  // 로컬 n8n
+            : 'https://n8nimagestudio.up.railway.app'  // Railway n8n
+    };
+
+    console.log('Environment:', isLocal ? 'LOCAL' : 'PRODUCTION');
+    console.log('N8N URL:', window.APP_CONFIG.N8N_URL);
+})();
