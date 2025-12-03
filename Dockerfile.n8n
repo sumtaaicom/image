@@ -1,0 +1,17 @@
+# n8n 서비스용 Dockerfile
+# Railway 배포용
+
+FROM n8nio/n8n:latest
+
+# n8n 기본 포트
+EXPOSE 5678
+
+# 환경 변수 기본값 설정
+ENV N8N_HOST=0.0.0.0
+ENV N8N_PORT=5678
+ENV N8N_PROTOCOL=https
+ENV NODE_ENV=production
+
+# 헬스체크
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:5678/healthz || exit 1

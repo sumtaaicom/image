@@ -1,0 +1,25 @@
+# Railway 배포 설정
+# 이 파일은 Railway가 프로젝트를 어떻게 빌드/배포할지 정의합니다
+#
+# 참고: Railway는 단일 railway.toml로 여러 서비스를 관리할 수 없습니다.
+# 각 서비스(n8n, frontend)는 Railway 대시보드에서 별도로 설정하거나,
+# 디렉토리별로 분리하여 배포해야 합니다.
+#
+# 권장 배포 방법:
+# 1. Railway 대시보드에서 새 프로젝트 생성
+# 2. PostgreSQL 애드온 추가
+# 3. n8n 서비스 추가 (Dockerfile.n8n 지정)
+# 4. frontend 서비스 추가 (Dockerfile.frontend 지정)
+
+[build]
+# 기본 빌더 (프론트엔드용)
+builder = "dockerfile"
+dockerfilePath = "Dockerfile.frontend"
+
+[deploy]
+# 헬스체크 엔드포인트
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+# 재시작 정책
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 5
