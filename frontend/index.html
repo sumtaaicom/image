@@ -571,29 +571,32 @@
         }
 
         .preset-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         .preset-group {
-            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         .preset-label {
-            display: block;
+            min-width: 60px;
             font-size: 13px;
             font-weight: 500;
             color: var(--text-secondary);
-            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            flex-shrink: 0;
         }
 
         .preset-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
+            flex: 1;
         }
 
         .preset-btn {
@@ -630,10 +633,6 @@
                 max-height: 400px;
             }
 
-            .preset-row {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
-            }
         }
 
         @media (max-width: 768px) {
@@ -678,20 +677,21 @@
                 padding: 16px;
             }
 
-            .preset-row {
-                grid-template-columns: 1fr;
-                gap: 12px;
+            .preset-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
             }
 
             .preset-label {
                 font-size: 11px;
-                margin-bottom: 8px;
+                min-width: auto;
             }
 
             .preset-buttons {
-                display: flex;
-                flex-wrap: nowrap;
+                width: 100%;
                 overflow-x: auto;
+                flex-wrap: nowrap;
                 gap: 6px;
                 padding-bottom: 4px;
                 -webkit-overflow-scrolling: touch;
