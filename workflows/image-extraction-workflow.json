@@ -36,7 +36,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $env.JINA_API_KEY }}"
+              "value": "Bearer jina_e90a05349b9d408ba753103fc390e6be4q7ooIixAWO0pPaMDg4DeHjDCME0"
             },
             {
               "name": "X-Return-Format",
