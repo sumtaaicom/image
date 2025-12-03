@@ -500,6 +500,8 @@
             grid.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 40px 0;"><div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><p style="margin-top: 10px; color: rgba(255,255,255,0.6);">이미지 추출 중...</p></div>';
 
             try {
+                console.log('[프론트] 요청 URL들:', urls);
+
                 const response = await fetch(CONFIG.extractionWebhook, {
                     method: 'POST',
                     headers: {
@@ -509,6 +511,10 @@
                 });
 
                 const data = await response.json();
+                console.log('[프론트] 서버 응답:', data);
+                console.log('[프론트] 이미지 배열:', data.images);
+                console.log('[프론트] 이미지 개수:', data.images?.length);
+
                 extractedImages = data.images || [];
 
                 if (extractedImages.length === 0) {

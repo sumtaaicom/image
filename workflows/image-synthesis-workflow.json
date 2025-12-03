@@ -10,8 +10,8 @@
           "allowedOrigins": "*"
         }
       },
-      "id": "webhook-synthesis",
-      "name": "Webhook - 합성 요청 수신",
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [240, 400],
@@ -19,9 +19,9 @@
     },
     {
       "parameters": {
-        "jsCode": "// 입력 파라미터 추출 및 검증\nconst body = $input.first().json.body;\n\nconst prompt = body.prompt || '';  // 사용자 합성 명령\nconst images = body.images || [];   // 합성할 이미지 URL 배열\nconst apiProvider = body.apiProvider || 'gemini';  // 기본값: gemini\nconst sessionId = body.sessionId || 'default';\n\n// 프롬프트 전처리 - LG 제품 합성에 최적화\nlet enhancedPrompt = prompt;\n\n// 자연어 명령 해석 및 변환\nconst promptMappings = [\n  { pattern: /위에.*배치/i, replacement: 'place on top of' },\n  { pattern: /아래에.*배치/i, replacement: 'place below' },\n  { pattern: /옆에.*배치/i, replacement: 'place next to' },\n  { pattern: /거실.*배경/i, replacement: 'in a modern living room setting' },\n  { pattern: /벽.*마운트/i, replacement: 'mounted on wall' }\n];\n\n// 기본 스타일 추가\nconst styleAddition = 'Professional product photography, high resolution, studio lighting, clean background';\n\nreturn [{\n  json: {\n    prompt: prompt,\n    enhancedPrompt: `${enhancedPrompt}. ${styleAddition}`,\n    images: images,\n    apiProvider: apiProvider,\n    sessionId: sessionId\n  }\n}];"
+        "jsCode": "// 입력 파라미터 추출 및 검증\nconst body = $input.first().json.body;\n\nconst prompt = body.prompt || '';  // 사용자 합성 명령\nconst images = body.images || [];   // 합성할 이미지 URL 배열\nconst apiProvider = body.apiProvider || 'gemini';  // 기본값: gemini\nconst sessionId = body.sessionId || 'default';\n\nconsole.log('=== [합성] 요청 수신 ===');\nconsole.log('프롬프트:', prompt);\nconsole.log('이미지 수:', images.length);\nconsole.log('API:', apiProvider);\n\n// 기본 스타일 추가\nconst styleAddition = 'Professional product photography, high resolution, studio lighting, clean background';\n\nreturn [{\n  json: {\n    prompt: prompt,\n    enhancedPrompt: `${prompt}. ${styleAddition}`,\n    images: images,\n    apiProvider: apiProvider,\n    sessionId: sessionId\n  }\n}];"
       },
-      "id": "code-prepare-request",
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
       "name": "요청 전처리",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -123,7 +123,7 @@
         },
         "options": {}
       },
-      "id": "switch-api",
+      "id": "a1b2c3d4-0003-4000-8000-000000000003",
       "name": "API 분기",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
@@ -153,12 +153,12 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"{{ $json.enhancedPrompt }}. Based on these product images, create a professional composite image.\"\n        }\n        {{ $json.images.length > 0 ? ',' + $json.images.map(img => ',{\"inline_data\": {\"mime_type\": \"image/jpeg\", \"data\": \"' + img + '\"}}').join('') : '' }}\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"responseModalities\": [\"image\", \"text\"],\n    \"responseMimeType\": \"image/png\"\n  }\n}",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"{{ $json.enhancedPrompt }}. Based on these product images, create a professional composite image.\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"responseModalities\": [\"image\", \"text\"],\n    \"responseMimeType\": \"image/png\"\n  }\n}",
         "options": {
           "timeout": 60000
         }
       },
-      "id": "http-gemini",
+      "id": "a1b2c3d4-0004-4000-8000-000000000004",
       "name": "Gemini API",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -188,7 +188,7 @@
           "timeout": 120000
         }
       },
-      "id": "http-replicate",
+      "id": "a1b2c3d4-0005-4000-8000-000000000005",
       "name": "Replicate API",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -218,8 +218,8 @@
           "timeout": 60000
         }
       },
-      "id": "http-openai",
-      "name": "OpenAI DALL-E API",
+      "id": "a1b2c3d4-0006-4000-8000-000000000006",
+      "name": "OpenAI API",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [920, 500]
@@ -252,17 +252,17 @@
           "timeout": 60000
         }
       },
-      "id": "http-stability",
-      "name": "Stability AI API",
+      "id": "a1b2c3d4-0007-4000-8000-000000000007",
+      "name": "Stability API",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [920, 650]
     },
     {
       "parameters": {
-        "jsCode": "// 각 API 응답 표준화\nconst input = $input.first().json;\nconst apiProvider = $('요청 전처리').first().json.apiProvider;\n\nlet imageUrl = '';\nlet imageBase64 = '';\n\nswitch(apiProvider) {\n  case 'gemini':\n    // Gemini 응답에서 이미지 추출\n    if (input.candidates && input.candidates[0]?.content?.parts) {\n      const parts = input.candidates[0].content.parts;\n      for (const part of parts) {\n        if (part.inline_data) {\n          imageBase64 = part.inline_data.data;\n          break;\n        }\n      }\n    }\n    break;\n    \n  case 'replicate':\n    // Replicate 응답에서 이미지 URL 추출\n    if (input.output) {\n      imageUrl = Array.isArray(input.output) ? input.output[0] : input.output;\n    } else if (input.urls?.get) {\n      // 아직 처리 중인 경우 - polling 필요\n      imageUrl = input.urls.get;\n    }\n    break;\n    \n  case 'openai':\n    // OpenAI 응답에서 이미지 URL 추출\n    if (input.data && input.data[0]) {\n      imageUrl = input.data[0].url;\n    }\n    break;\n    \n  case 'stability':\n    // Stability AI 응답에서 이미지 추출\n    if (input.artifacts && input.artifacts[0]) {\n      imageBase64 = input.artifacts[0].base64;\n    }\n    break;\n}\n\nreturn [{\n  json: {\n    success: !!(imageUrl || imageBase64),\n    apiProvider: apiProvider,\n    imageUrl: imageUrl,\n    imageBase64: imageBase64 ? `data:image/png;base64,${imageBase64}` : '',\n    prompt: $('요청 전처리').first().json.prompt,\n    generatedAt: new Date().toISOString()\n  }\n}];"
+        "jsCode": "// 각 API 응답 표준화\nconst input = $input.first().json;\n\nconsole.log('=== [합성] 응답 정규화 시작 ===');\nconsole.log('받은 입력:', JSON.stringify(input).substring(0, 500));\n\nlet imageUrl = '';\nlet imageBase64 = '';\nlet apiProvider = 'gemini';\n\n// API provider 확인 시도\ntry {\n  const prepNode = $('요청 전처리');\n  if (prepNode && prepNode.first()) {\n    apiProvider = prepNode.first().json.apiProvider || 'gemini';\n  }\n} catch(e) {\n  console.log('요청 전처리 노드 참조 실패, 기본값 사용');\n}\n\nconsole.log('API Provider:', apiProvider);\n\nswitch(apiProvider) {\n  case 'gemini':\n    // Gemini 응답에서 이미지 추출\n    if (input.candidates && input.candidates[0]?.content?.parts) {\n      const parts = input.candidates[0].content.parts;\n      for (const part of parts) {\n        if (part.inline_data) {\n          imageBase64 = part.inline_data.data;\n          console.log('Gemini 이미지 추출 성공');\n          break;\n        }\n      }\n    }\n    break;\n    \n  case 'replicate':\n    // Replicate 응답에서 이미지 URL 추출\n    if (input.output) {\n      imageUrl = Array.isArray(input.output) ? input.output[0] : input.output;\n    } else if (input.urls?.get) {\n      imageUrl = input.urls.get;\n    }\n    break;\n    \n  case 'openai':\n    // OpenAI 응답에서 이미지 URL 추출\n    if (input.data && input.data[0]) {\n      imageUrl = input.data[0].url;\n    }\n    break;\n    \n  case 'stability':\n    // Stability AI 응답에서 이미지 추출\n    if (input.artifacts && input.artifacts[0]) {\n      imageBase64 = input.artifacts[0].base64;\n    }\n    break;\n}\n\nconst result = {\n  success: !!(imageUrl || imageBase64),\n  apiProvider: apiProvider,\n  imageUrl: imageUrl,\n  imageBase64: imageBase64 ? `data:image/png;base64,${imageBase64}` : '',\n  generatedAt: new Date().toISOString()\n};\n\nconsole.log('=== [합성] 응답 정규화 완료 ===');\nconsole.log('결과:', JSON.stringify({ ...result, imageBase64: result.imageBase64 ? '[BASE64_DATA]' : '' }));\n\nreturn [{ json: result }];"
       },
-      "id": "code-normalize-response",
+      "id": "a1b2c3d4-0008-4000-8000-000000000008",
       "name": "응답 정규화",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -283,7 +283,7 @@
           }
         }
       },
-      "id": "respond-synthesis",
+      "id": "a1b2c3d4-0009-4000-8000-000000000009",
       "name": "합성 결과 반환",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
@@ -291,7 +291,7 @@
     }
   ],
   "connections": {
-    "Webhook - 합성 요청 수신": {
+    "Webhook": {
       "main": [
         [
           {
@@ -331,14 +331,14 @@
         ],
         [
           {
-            "node": "OpenAI DALL-E API",
+            "node": "OpenAI API",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Stability AI API",
+            "node": "Stability API",
             "type": "main",
             "index": 0
           }
@@ -367,7 +367,7 @@
         ]
       ]
     },
-    "OpenAI DALL-E API": {
+    "OpenAI API": {
       "main": [
         [
           {
@@ -378,11 +378,22 @@
         ]
       ]
     },
-    "Stability AI API": {
+    "Stability API": {
       "main": [
         [
           {
             "node": "응답 정규화",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "응답 정규화": {
+      "main": [
+        [
+          {
+            "node": "합성 결과 반환",
             "type": "main",
             "index": 0
           }
