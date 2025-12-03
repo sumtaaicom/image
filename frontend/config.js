@@ -6,7 +6,7 @@
     window.APP_CONFIG = {
         N8N_URL: isLocal
             ? 'http://localhost:5678'  // 로컬 n8n
-            : '/api/n8n'  // Railway - Nginx 프록시 경로 (CORS 우회)
+            : 'https://n8nimagestudio.up.railway.app'  // Railway n8n (CORS 허용됨)
     };
 
     console.log('Environment:', isLocal ? 'LOCAL' : 'PRODUCTION');
