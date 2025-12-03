@@ -198,11 +198,16 @@
 
         /* Left Panel - URL Input */
         .left-panel {
-            background: transparent;
+            background: var(--bg-primary);
             border: 1px solid var(--border);
             padding: 28px;
             display: flex;
             flex-direction: column;
+            position: sticky;
+            top: 20px;
+            align-self: flex-start;
+            max-height: calc(100vh - 170px);
+            overflow-y: auto;
         }
 
         .panel-title {
