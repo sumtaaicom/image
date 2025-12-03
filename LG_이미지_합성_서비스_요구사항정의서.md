@@ -310,7 +310,7 @@ LG전자 제품 페이지(TV, 스피커바 등)에서 대표 이미지를 자동
 
 ### 10.3 파일 구조
 ```
-lg-image-service/
+n8n/  (프로젝트 루트)
 ├── docker-compose.yml          # 개발용 Docker 설정
 ├── docker-compose.prod.yml     # 프로덕션용 (Nginx 포함)
 ├── .env.example                # 환경변수 템플릿
@@ -322,7 +322,8 @@ lg-image-service/
 │   └── index.html              # LG ImageStudio UI (단일 파일)
 ├── nginx/
 │   └── nginx.conf              # 리버스 프록시 설정
-└── README.md                   # 사용 가이드
+├── README.md                   # 사용 가이드
+└── LG_이미지_합성_서비스_요구사항정의서.md  # 본 문서
 ```
 
 ### 10.4 API 엔드포인트
