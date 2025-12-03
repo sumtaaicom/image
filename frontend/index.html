@@ -731,10 +731,17 @@
                 left: 0;
                 right: 0;
                 padding: 12px 16px;
-                background: var(--bg-primary);
+                background: #ffffff;
                 border-top: 1px solid var(--border-color);
                 border-radius: 0;
                 z-index: 100;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            /* 다크모드: 채팅 입력 영역 배경 */
+            [data-theme="dark"] .chat-input-container {
+                background: #1a1a1a;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
             }
 
             .chat-input {
