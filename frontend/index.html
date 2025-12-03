@@ -90,17 +90,29 @@
             gap: 24px;
         }
 
+        /* Settings Group - 언어 + 테마를 하나로 */
+        .settings-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .settings-group > *:not(:last-child) {
+            border-right: 1px solid var(--border);
+        }
+
         /* Language Selector - Dropdown Style */
         .lang-dropdown {
             position: relative;
-            display: inline-block;
         }
 
         .lang-btn {
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border: none;
             background: transparent;
             color: var(--text-primary);
@@ -111,24 +123,26 @@
         }
 
         .lang-btn i {
-            font-size: 18px;
+            font-size: 16px;
             color: var(--text-secondary);
         }
 
         .lang-btn:hover {
-            color: var(--accent);
+            background: var(--border-light);
         }
 
         .lang-menu {
             display: none;
             position: absolute;
-            top: 100%;
+            top: calc(100% + 4px);
             left: 0;
             right: 0;
             background: var(--surface);
             border: 1px solid var(--border);
+            border-radius: 8px;
             z-index: 100;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
         }
 
         .lang-dropdown.open .lang-menu {
@@ -158,48 +172,21 @@
         }
 
         /* Theme Toggle */
-        .theme-toggle {
+        .theme-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 18px;
             cursor: pointer;
         }
 
-        .theme-toggle-track {
-            width: 44px;
-            height: 24px;
-            border: 1px solid var(--border);
-            background: transparent;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .theme-toggle-track:hover {
-            border-color: var(--text-secondary);
-        }
-
-        .theme-toggle-thumb {
-            width: 18px;
-            height: 18px;
-            background: var(--text-primary);
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s ease;
-        }
-
-        [data-theme="light"] .theme-toggle-thumb {
-            left: 22px;
-        }
-
-        .theme-toggle-icon {
-            font-size: 16px;
-            color: var(--text-secondary);
-            transition: color 0.3s ease;
-        }
-
-        .theme-toggle-icon.active {
-            color: var(--text-primary);
+        .theme-btn:hover {
+            background: var(--border-light);
         }
 
         /* Main Layout */
@@ -667,24 +654,19 @@
                 gap: 12px;
             }
 
-            /* 모바일: 테마 토글 아이콘만 표시 */
-            .theme-toggle-track,
-            .theme-toggle-icon:not(.mobile-visible) {
-                display: none;
+            .settings-group {
+                border-radius: 6px;
             }
 
-            .theme-toggle {
-                width: 40px;
-                height: 40px;
-                border: 1px solid var(--border);
-                border-radius: 50%;
-                justify-content: center;
+            .lang-btn {
+                padding: 8px 10px;
+                font-size: 12px;
             }
 
-            .theme-toggle .mobile-theme-icon {
-                display: flex;
-                font-size: 20px;
-                color: var(--text-primary);
+            .theme-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 16px;
             }
 
             .logo-text {
@@ -710,11 +692,6 @@
                 padding: 14px 20px;
                 font-size: 10px;
             }
-        }
-
-        /* 모바일 테마 아이콘 (데스크탑에서 숨김) */
-        .mobile-theme-icon {
-            display: none;
         }
 
         /* Scrollbar Styling */
@@ -743,28 +720,25 @@
                 <span class="logo-text">LG <span>ImageStudio</span></span>
             </div>
             <div class="header-controls">
-                <!-- Language Selector -->
-                <div class="lang-dropdown" id="langDropdown">
-                    <button class="lang-btn" onclick="toggleLangMenu()">
-                        <i class="ph-light ph-globe"></i>
-                        <span id="currentLangCode">KO</span>
-                        <i class="ph-light ph-caret-down" style="font-size: 12px;"></i>
-                    </button>
-                    <div class="lang-menu">
-                        <button class="lang-menu-item active" data-lang="ko" onclick="selectLanguage('ko')">KO</button>
-                        <button class="lang-menu-item" data-lang="en" onclick="selectLanguage('en')">EN</button>
+                <!-- Settings Group: 언어 + 테마 -->
+                <div class="settings-group">
+                    <!-- Language Selector -->
+                    <div class="lang-dropdown" id="langDropdown">
+                        <button class="lang-btn" onclick="toggleLangMenu()">
+                            <i class="ph-light ph-globe"></i>
+                            <span id="currentLangCode">KO</span>
+                            <i class="ph-light ph-caret-down" style="font-size: 10px;"></i>
+                        </button>
+                        <div class="lang-menu">
+                            <button class="lang-menu-item active" data-lang="ko" onclick="selectLanguage('ko')">KO</button>
+                            <button class="lang-menu-item" data-lang="en" onclick="selectLanguage('en')">EN</button>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Theme Toggle -->
-                <div class="theme-toggle" onclick="toggleTheme()">
-                    <i class="ph-light ph-moon theme-toggle-icon active" id="darkIcon"></i>
-                    <div class="theme-toggle-track">
-                        <div class="theme-toggle-thumb"></div>
-                    </div>
-                    <i class="ph-light ph-sun theme-toggle-icon" id="lightIcon"></i>
-                    <!-- 모바일용: 현재 테마 아이콘만 표시 -->
-                    <i class="ph-light ph-moon mobile-theme-icon" id="mobileThemeIcon"></i>
+                    <!-- Theme Toggle -->
+                    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+                        <i class="ph-light ph-moon" id="themeIcon"></i>
+                    </button>
                 </div>
             </div>
         </header>
@@ -988,19 +962,15 @@
         function toggleTheme() {
             const body = document.body;
             const isDark = !body.hasAttribute('data-theme') || body.getAttribute('data-theme') === 'dark';
-            const mobileIcon = document.getElementById('mobileThemeIcon');
+            const themeIcon = document.getElementById('themeIcon');
 
             if (isDark) {
                 body.setAttribute('data-theme', 'light');
-                document.getElementById('darkIcon').classList.remove('active');
-                document.getElementById('lightIcon').classList.add('active');
-                mobileIcon.className = 'ph-light ph-sun mobile-theme-icon';
+                themeIcon.className = 'ph-light ph-sun';
                 localStorage.setItem('theme', 'light');
             } else {
                 body.removeAttribute('data-theme');
-                document.getElementById('darkIcon').classList.add('active');
-                document.getElementById('lightIcon').classList.remove('active');
-                mobileIcon.className = 'ph-light ph-moon mobile-theme-icon';
+                themeIcon.className = 'ph-light ph-moon';
                 localStorage.setItem('theme', 'dark');
             }
         }
@@ -1100,12 +1070,10 @@
         function initSettings() {
             // 테마 적용
             const savedTheme = localStorage.getItem('theme');
-            const mobileIcon = document.getElementById('mobileThemeIcon');
+            const themeIcon = document.getElementById('themeIcon');
             if (savedTheme === 'light') {
                 document.body.setAttribute('data-theme', 'light');
-                document.getElementById('darkIcon').classList.remove('active');
-                document.getElementById('lightIcon').classList.add('active');
-                mobileIcon.className = 'ph-light ph-sun mobile-theme-icon';
+                themeIcon.className = 'ph-light ph-sun';
             }
 
             // 언어 적용
